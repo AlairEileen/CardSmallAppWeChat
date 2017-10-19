@@ -25,7 +25,11 @@ namespace CardWXSmallApp.Controllers
             string jsonString = JsonConvert.SerializeObject(ConstantProperty.CityProvinceList,jsonSerializerSettings);
             return jsonString;
         }
-
+        public string getAllProvince()
+        {
+            string jsonString = JsonConvert.SerializeObject(ConstantProperty.CityProvinceList);
+            return jsonString;
+        }
         private void ResetProvinceCity()
         {
             if (ConstantProperty.CityProvinceList == null || ConstantProperty.CityProvinceList.Count == 0)

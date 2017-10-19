@@ -79,38 +79,47 @@ namespace CardWXSmallApp.Controllers
         }
 
 
-
+        /// <summary>
+        /// 修改个人昵称、性别、手机号、生日、隐私开关
+        /// </summary>
+        /// <param name="accountCard"></param>
+        /// <returns></returns>
         public string ChangePersonInfo(AccountCard accountCard)
         {
-
-            var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
-            UpdateDefinition<AccountCard> update = null;
-            if (!string.IsNullOrEmpty(accountCard.AccountName))
-            {
-                update = Builders<AccountCard>.Update.Set(x => x.AccountName, accountCard.AccountName);
-
-            }
-            else if (accountCard.Birthday != DateTime.MinValue)
-            {
-                update = Builders<AccountCard>.Update.Set(x => x.Birthday, accountCard.Birthday);
-            }
-            else if (accountCard.Gender != 0)
-            {
-                update = Builders<AccountCard>.Update.Set(x => x.Gender, accountCard.Gender);
-            }
-            else if (!string.IsNullOrEmpty(accountCard.PhoneNumber))
-            {
-                update = Builders<AccountCard>.Update.Set(x => x.PhoneNumber, accountCard.PhoneNumber);
-            }
-            else if (accountCard.SafeMode != 0)
-            {
-                update = Builders<AccountCard>.Update.Set(x => x.SafeMode, accountCard.SafeMode);
-            }
-
-            new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard").UpdateOne(filter, update);
-            
             BaseResponseModel<AccountCard> responseModel = new BaseResponseModel<AccountCard>();
-            responseModel.StatusCode = (int)ActionParams.code_ok;
+            responseModel.StatusCode = (int)ActionParams.code_error;
+            try
+            {
+                var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
+                UpdateDefinition<AccountCard> update = null;
+                if (!string.IsNullOrEmpty(accountCard.AccountName))
+                {
+                    update = Builders<AccountCard>.Update.Set(x => x.AccountName, accountCard.AccountName);
+
+                }
+                else if (accountCard.Birthday != DateTime.MinValue)
+                {
+                    update = Builders<AccountCard>.Update.Set(x => x.Birthday, accountCard.Birthday);
+                }
+                else if (accountCard.Gender != 0)
+                {
+                    update = Builders<AccountCard>.Update.Set(x => x.Gender, accountCard.Gender);
+                }
+                else if (!string.IsNullOrEmpty(accountCard.PhoneNumber))
+                {
+                    update = Builders<AccountCard>.Update.Set(x => x.PhoneNumber, accountCard.PhoneNumber);
+                }
+                else if (accountCard.SafeMode != 0)
+                {
+                    update = Builders<AccountCard>.Update.Set(x => x.SafeMode, accountCard.SafeMode);
+                }
+                new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard").UpdateOne(filter, update);
+                responseModel.StatusCode = (int)ActionParams.code_ok;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             string jsonResult = JsonConvert.SerializeObject(responseModel);
 
             return jsonResult;
