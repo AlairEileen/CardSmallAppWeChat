@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardWXSmallApp", "CardWXSmallApp\CardWXSmallApp.csproj", "{1661591C-89D5-496F-9E56-4634EA8A0B94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WXSmallAppCommon", "WXSmallAppCommon\WXSmallAppCommon.csproj", "{75EFC883-2B7E-490C-8B33-7A38A9635543}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1661591C-89D5-496F-9E56-4634EA8A0B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1661591C-89D5-496F-9E56-4634EA8A0B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1661591C-89D5-496F-9E56-4634EA8A0B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1661591C-89D5-496F-9E56-4634EA8A0B94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75EFC883-2B7E-490C-8B33-7A38A9635543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75EFC883-2B7E-490C-8B33-7A38A9635543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75EFC883-2B7E-490C-8B33-7A38A9635543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75EFC883-2B7E-490C-8B33-7A38A9635543}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B728B53F-FC84-4BB4-9033-D0A3D530BFAA}
+	EndGlobalSection
+EndGlobal
