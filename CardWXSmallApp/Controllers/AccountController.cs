@@ -78,28 +78,43 @@ namespace CardWXSmallApp.Controllers
             return jsonString;
         }
 
-      
 
-    public string ChangePersonInfo(AccountCard accountCard)
+
+        public string ChangePersonInfo(AccountCard accountCard)
         {
-            Console.WriteLine(accountCard.OpenId);
 
-            //var filter = Builders<AccountCard>.Filter.Eq(x =>x.OpenId, accountCard.OpenId);
-            //UpdateDefinition<AccountCard> update = null;
-            //if (!string.IsNullOrEmpty(accountCard.AccountName))
-            //{
-            //    update= Builders<AccountCard>.Update.Set(x => x.AccountName, accountCard.AccountName);
+            var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
+            UpdateDefinition<AccountCard> update = null;
+            if (!string.IsNullOrEmpty(accountCard.AccountName))
+            {
+                update = Builders<AccountCard>.Update.Set(x => x.AccountName, accountCard.AccountName);
 
-            //}
-            //else if (accountCard.Birthday!=null)
-            //{
-            //    update = Builders<AccountCard>.Update.Set(x => x.Birthday, accountCard.Birthday);
-            //}
+            }
+            else if (accountCard.Birthday != DateTime.MinValue)
+            {
+                update = Builders<AccountCard>.Update.Set(x => x.Birthday, accountCard.Birthday);
+            }
+            else if (accountCard.Gender != 0)
+            {
+                update = Builders<AccountCard>.Update.Set(x => x.Gender, accountCard.Gender);
+            }
+            else if (!string.IsNullOrEmpty(accountCard.PhoneNumber))
+            {
+                update = Builders<AccountCard>.Update.Set(x => x.PhoneNumber, accountCard.PhoneNumber);
+            }
+            else if (accountCard.SafeMode != 0)
+            {
+                update = Builders<AccountCard>.Update.Set(x => x.SafeMode, accountCard.SafeMode);
+            }
 
-            //new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard").FindOneAndUpdate();
+            new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard").UpdateOne(filter, update);
+            
+            BaseResponseModel<AccountCard> responseModel = new BaseResponseModel<AccountCard>();
+            responseModel.StatusCode = (int)ActionParams.code_ok;
+            string jsonResult = JsonConvert.SerializeObject(responseModel);
 
-            return accountCard.PhoneNumber;
-                
+            return jsonResult;
+
         }
     }
 }

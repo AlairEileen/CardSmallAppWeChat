@@ -9,7 +9,6 @@ namespace CardWXSmallApp.Tools
 {
     public class DateConverter : JsonConverter
     {
-        private DateTime dateTime;
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(DateTime);
@@ -30,7 +29,7 @@ namespace CardWXSmallApp.Tools
             if (value is DateTime)
             {
                 var objId = (DateTime)value;
-                writer.WriteValue(objId != null&& !objId.Equals(dateTime) ? objId.ToString(format):null);
+                writer.WriteValue(objId != null&& !objId.Equals(DateTime.MinValue) ? objId.ToString(format):"暂无");
             }
             else
             {
