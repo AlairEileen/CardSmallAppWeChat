@@ -16,6 +16,7 @@ namespace CardWXSmallApp.Models
         public String AvatarUrl { get; set; }
         public String AccountName { get; set; }
         public Int32 Gender { get; set; }
+        [JsonConverter(typeof(Tools.DateConverter))]
         public DateTime Birthday { get; set; }
         public String PhoneNumber { get; set; }
         public String Province { get; set; }

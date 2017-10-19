@@ -80,6 +80,26 @@ namespace CardWXSmallApp.Controllers
 
       
 
-    
+    public string ChangePersonInfo(AccountCard accountCard)
+        {
+            Console.WriteLine(accountCard.OpenId);
+
+            //var filter = Builders<AccountCard>.Filter.Eq(x =>x.OpenId, accountCard.OpenId);
+            //UpdateDefinition<AccountCard> update = null;
+            //if (!string.IsNullOrEmpty(accountCard.AccountName))
+            //{
+            //    update= Builders<AccountCard>.Update.Set(x => x.AccountName, accountCard.AccountName);
+
+            //}
+            //else if (accountCard.Birthday!=null)
+            //{
+            //    update = Builders<AccountCard>.Update.Set(x => x.Birthday, accountCard.Birthday);
+            //}
+
+            //new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard").FindOneAndUpdate();
+
+            return accountCard.PhoneNumber;
+                
+        }
     }
 }
