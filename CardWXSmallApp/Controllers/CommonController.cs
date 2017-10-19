@@ -21,14 +21,28 @@ namespace CardWXSmallApp.Controllers
             ResetProvinceCity();
             JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
             jsonSerializerSettings.ContractResolver = new LimitPropsContractResolver(new string[] { "code", "name", "initial" });
-
             string jsonString = JsonConvert.SerializeObject(ConstantProperty.CityProvinceList,jsonSerializerSettings);
             return jsonString;
         }
         public string getAllProvince()
         {
+            ResetProvinceCity();
             string jsonString = JsonConvert.SerializeObject(ConstantProperty.CityProvinceList);
             return jsonString;
+        }
+        public string getProvinceCity()
+        {
+            string json = null;
+            using (StreamReader fs = new StreamReader("ProvinceCity.json"))
+            {
+                json = fs.ReadToEnd();
+            }
+            SimpleProvinceCity list = null;
+            if (json != null)
+            {
+                list = JsonConvert.DeserializeObject<SimpleProvinceCity>(json);
+            }
+            return JsonConvert.SerializeObject(list);
         }
         private void ResetProvinceCity()
         {

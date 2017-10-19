@@ -13,7 +13,7 @@ namespace CardWXSmallApp.Tools
         {
             return objectType == typeof(DateTime);
         }
-        string format = "yyyy年MM月dd日";
+        string format = "yyyy-MM-dd";
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType!=JsonToken.String)
