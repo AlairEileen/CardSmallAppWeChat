@@ -10,6 +10,7 @@ namespace CardWXSmallApp.Models
 {
     public class AccountCard
     {
+        [JsonIgnore]
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
         public ObjectId Id { get; set; }
         public String OpenId { get; set; }
@@ -25,9 +26,21 @@ namespace CardWXSmallApp.Models
         public DateTime CreateTime { get; set; }
         [JsonIgnore]
         public DateTime LastLoginTime { get; set; }
-        public List<LocationCard> AddressList { get; set; }
-
-
-
+        /// <summary>
+        /// 位置列表
+        /// </summary>
+        public List<LocationCard> LocationList { get; set; }
+        /// <summary>
+        /// 名片
+        /// </summary>
+        public NameCard NameCard { get; set; }
+        /// <summary>
+        /// 相册
+        /// </summary>
+        public List<AlbumCard> AlbumCardList { get; set; }
+        /// <summary>
+        /// 关系
+        /// </summary>
+        public RelationCard Relation { get; set; }
     }
 }

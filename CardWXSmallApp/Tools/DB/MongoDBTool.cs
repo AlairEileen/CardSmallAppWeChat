@@ -28,8 +28,10 @@ namespace CardWXSmallApp.Tools.DB
             return mongoClient.GetDatabase(dbName);
         }
 
-        public IMongoCollection<T> GetMongoCollection<T>(string collectionName)
+        public IMongoCollection<T> GetMongoCollection<T>()
         {
+            string packageName = typeof(T).ToString();
+            string collectionName = packageName.Substring(packageName.LastIndexOf(".")+1);
             return GetMongoDatabase().GetCollection<T>(collectionName);
         }
     }

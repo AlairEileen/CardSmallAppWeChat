@@ -3,6 +3,12 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="‪‪‪project_data\**" />
+    <Content Remove="‪‪‪project_data\**" />
+    <EmbeddedResource Remove="‪‪‪project_data\**" />
+    <None Remove="‪‪‪project_data\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.4.4" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.0-preview1-25718-03" />
@@ -12,5 +18,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WXSmallAppCommon\WXSmallAppCommon.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ProjectData\Avatar\" />
   </ItemGroup>
 </Project>
