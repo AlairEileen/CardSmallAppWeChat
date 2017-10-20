@@ -172,6 +172,12 @@ namespace CardWXSmallApp.Controllers
             return addressCard.GPSAddress+"$$$$"+openId;
         }
 
+        /// <summary>
+        /// 修改地址
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <param name="addressCard"></param>
+        /// <returns></returns>
         public string ChangeAddress(string openId,AddressCard addressCard)
         {
             BaseResponseModel<string> responseModel = new BaseResponseModel<string>();

@@ -10,12 +10,9 @@ namespace CardWXSmallApp.Models
     public class AddressCard
     {
         [JsonIgnore]
-        public ObjectId MyProperty { get; set; }
-        public Int32 ProvinceIndex { get; set; }
+        public ObjectId Id { get; set; }
+        public Int32[] ProvinceCityIndexArray { get; set; }
         public String ProvinceName { get; set; }
-        public Int32 CityIndex { get; set; }
         public String CityName { get; set; }
-        public Int32 AreaIndex { get; set; }
-        public String AreaName { get; set; }
     }
 }
