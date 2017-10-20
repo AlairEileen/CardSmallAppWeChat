@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CardWXSmallApp.Models
 {
-    public class AccountCard 
+    public class AccountCard
     {
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
         public ObjectId Id { get; set; }
@@ -19,16 +19,15 @@ namespace CardWXSmallApp.Models
         [JsonConverter(typeof(Tools.DateConverter))]
         public DateTime Birthday { get; set; }
         public String PhoneNumber { get; set; }
-        public String Province { get; set; }
-        public String City { get; set; }
+        public AddressCard Address { get; set; }
         public Int32 SafeMode { get; set; }
         [JsonIgnore]
         public DateTime CreateTime { get; set; }
         [JsonIgnore]
         public DateTime LastLoginTime { get; set; }
-        public List<AddressCard> AddressList { get; set; }
+        public List<LocationCard> AddressList { get; set; }
 
 
-        
+
     }
 }

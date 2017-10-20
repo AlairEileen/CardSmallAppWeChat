@@ -24,4 +24,6 @@ namespace CardWXSmallApp.Models
         [JsonProperty("citysName")]
         public String CityName { get; set; }
     }
+
+    
 }

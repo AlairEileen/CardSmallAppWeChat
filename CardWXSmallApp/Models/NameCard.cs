@@ -17,7 +17,7 @@ namespace CardWXSmallApp.Models
         public String Email { get; set; }
         public String More { get; set; }
 
-        public AddressCard Address { get; set; }
+        public LocationCard Address { get; set; }
 
         public AccountCard AccountCard { get; set; }
         public AlbumCard Album { get; set; }

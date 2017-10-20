@@ -41,7 +41,10 @@ namespace CardWXSmallApp.Controllers
 
                 if (accountCard == null)
                 {
-                    accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = wXAccount.gender, AvatarUrl = wXAccount.avatarUrl, City = wXAccount.city, Province = wXAccount.province, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
+                    AddressCard addressCard = new AddressCard();
+                    addressCard.ProvinceName = wXAccount.province;
+                    addressCard.CityName = wXAccount.city;
+                    accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = wXAccount.gender, AvatarUrl = wXAccount.avatarUrl, Address=addressCard, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
                     collection.InsertOne(accountCard);
                 }
             }
@@ -53,6 +56,8 @@ namespace CardWXSmallApp.Controllers
                 stautsCode = (int)(ActionParams.code_ok);
             }
             responseModel.StatusCode = stautsCode;
+            //JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
+            //jsonSerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
             string jsonString = JsonConvert.SerializeObject(responseModel);
 
             Console.WriteLine("json**3:" + jsonString);
@@ -72,7 +77,7 @@ namespace CardWXSmallApp.Controllers
 
             accountCard = list.FirstOrDefault();
             //驼峰
-            //string jsonString = JsonConvert.SerializeObject(new BaseResponseModel<AccountCard>() { JsonData = accountCard, StatusCode = (int)ActionParams.code_ok },new JsonSerializerSettings { ContractResolver=new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()});
+            //string jsonString = JsonConvert.SerializeObject(new BaseResponseModel<AccountCard>() { JsonData = accountCard, StatusCode = (int)ActionParams.code_ok }, new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
             string jsonString = JsonConvert.SerializeObject(new BaseResponseModel<AccountCard>() { JsonData = accountCard, StatusCode = (int)ActionParams.code_ok });
 
             return jsonString;
@@ -121,9 +126,70 @@ namespace CardWXSmallApp.Controllers
                 throw;
             }
             string jsonResult = JsonConvert.SerializeObject(responseModel);
-
             return jsonResult;
+        }
+        /// <summary>
+        /// 查询个人地址列表
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        public string FindAllAddress(string openId)
+        {
+            BaseResponseModel<List<LocationCard>> responseModel = new BaseResponseModel<List<LocationCard>>();
+            responseModel.StatusCode = (int)ActionParams.code_error;
+            try
+            {
+                var collectiion = new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard");
+                var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);
+                var list = collectiion.Find<AccountCard>(f => f.OpenId.Equals(openId));
+                AccountCard accountCard = null;
 
+                accountCard = list.FirstOrDefault();
+                List<LocationCard> addressCardList = accountCard.AddressList;
+                responseModel.JsonData = addressCardList;
+                responseModel.StatusCode = (int)ActionParams.code_ok;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            string jsonResult = JsonConvert.SerializeObject(responseModel);
+            return jsonResult;
+        }
+        /// <summary>
+        /// 添加地址
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <param name="addressCard"></param>
+        /// <returns></returns>
+        public string AddLocation(string openId,LocationCard addressCard)
+        {
+            
+            //addressCard.GPSAddress = System.Text.Encoding.UTF8.GetString(System.Text.Encoding.UTF8.GetBytes(addressCard.GPSAddress));
+            Console.WriteLine("*************:"+addressCard.GPSAddress);
+            return addressCard.GPSAddress+"$$$$"+openId;
+        }
+
+        public string ChangeAddress(string openId,AddressCard addressCard)
+        {
+            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
+            responseModel.StatusCode = (int)ActionParams.code_ok;
+            try
+            {
+                var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);
+                var update = Builders<AccountCard>.Update.Set(x => x.Address, addressCard);
+                new MongoDBTool().GetMongoCollection<AccountCard>("AccountCard").UpdateOne(filter, update);
+            }
+            catch (Exception)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error;
+
+                throw;
+            }
+
+            return JsonConvert.SerializeObject(responseModel);
         }
     }
 }

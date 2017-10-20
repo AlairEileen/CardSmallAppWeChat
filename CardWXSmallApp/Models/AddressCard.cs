@@ -1,5 +1,4 @@
 ﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,11 +9,13 @@ namespace CardWXSmallApp.Models
 {
     public class AddressCard
     {
-        [JsonConverter(typeof(Tools.ObjectIdConverter))]
-        public ObjectId Id { get; set; }
-        public Double Longitude { get; set; }
-        public Double Latitude { get; set; }
-        public String GPSAddress { get; set; }
-        
+        [JsonIgnore]
+        public ObjectId MyProperty { get; set; }
+        public Int32 ProvinceIndex { get; set; }
+        public String ProvinceName { get; set; }
+        public Int32 CityIndex { get; set; }
+        public String CityName { get; set; }
+        public Int32 AreaIndex { get; set; }
+        public String AreaName { get; set; }
     }
 }
