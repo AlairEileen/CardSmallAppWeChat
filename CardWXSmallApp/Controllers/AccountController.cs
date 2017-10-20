@@ -44,6 +44,7 @@ namespace CardWXSmallApp.Controllers
                     AddressCard addressCard = new AddressCard();
                     addressCard.ProvinceName = wXAccount.province;
                     addressCard.CityName = wXAccount.city;
+                    addressCard.ProvinceCityIndexArray = new int[2] { 0,0};
                     accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = wXAccount.gender, AvatarUrl = wXAccount.avatarUrl, Address=addressCard, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
                     collection.InsertOne(accountCard);
                 }
