@@ -3,9 +3,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ProjectData\**" />
     <Compile Remove="‪‪‪project_data\**" />
+    <Content Remove="ProjectData\**" />
     <Content Remove="‪‪‪project_data\**" />
+    <EmbeddedResource Remove="ProjectData\**" />
     <EmbeddedResource Remove="‪‪‪project_data\**" />
+    <None Remove="ProjectData\**" />
     <None Remove="‪‪‪project_data\**" />
   </ItemGroup>
   <ItemGroup>
@@ -18,8 +22,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WXSmallAppCommon\WXSmallAppCommon.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ProjectData\Avatar\" />
   </ItemGroup>
 </Project>
