@@ -2,7 +2,7 @@
 @model TestModel
 @{
 }
-<img src="http://localhost:60161/File/FileDownload?fileUrl=avatar/oeEn70L9nA_k16rFyQCXaycrO0mI.png"/>
+<img src="http://localhost:60161/File/FileDownload?fileUrl=avatar/oeEn70L9nA_k16rFyQCXaycrO0mI.png" />
 
 <form method="post" enctype="multipart/form-data">
     <input type="file" id="files"
@@ -11,27 +11,57 @@
            id="upload" onclick="doUpload(this)"
            value="Upload Selected Files" />
 </form>
+
+<form method="post" enctype="multipart/form-data">
+    <input type="file" id="file2"
+           name="files" />
+    <input type="button"
+           id="upload2" onclick="doUploadImage(this)"
+           value="Upload Image" />
+</form>
 <script type="text/javascript">
-        function doUpload (evt) {
-            var fileUpload = $("#files").get(0);
-            var files = fileUpload.files;
-            var data = new FormData();
-            for (var i = 0; i < files.length; i++) {
-                data.append(files[i].name, files[i]);
-            }
-            data.append("openId", "oeEn70L9nA_k16rFyQCXaycrO0mI");
-            $.ajax({
-                type: "POST",
-                url: "/file/uploadavatar",
-                contentType: false,
-                processData: false,
-                data: data,
-                success: function (message) {
-                    alert(message);
-                },
-                error: function () {
-                    alert("There was error uploading files!");
-                }
-            });
+    function doUpload(evt) {
+        var fileUpload = $("#files").get(0);
+        var files = fileUpload.files;
+        var data = new FormData();
+        for (var i = 0; i < files.length; i++) {
+            data.append(files[i].name, files[i]);
         }
+        data.append("openId", "oeEn70L9nA_k16rFyQCXaycrO0mI");
+        $.ajax({
+            type: "POST",
+            url: "/file/uploadavatar",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (message) {
+                alert(message);
+            },
+            error: function () {
+                alert("There was error uploading files!");
+            }
+        });
+    }
+
+    function doUploadImage(evt) {
+        var fileUpload = $("#file2").get(0);
+        var files = fileUpload.files;
+        var data = new FormData();
+        for (var i = 0; i < files.length; i++) {
+            data.append(files[i].name, files[i]);
+        }
+        $.ajax({
+            type: "POST",
+            url: "/file/UploadImage",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (message) {
+                alert(message);
+            },
+            error: function () {
+                alert("There was error uploading files!");
+            }
+        });
+    }
 </script>

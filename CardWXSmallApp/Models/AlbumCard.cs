@@ -13,7 +13,6 @@ namespace CardWXSmallApp.Models
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
         public ObjectId Id { get; set; }
         public String Name { get; set; }
-        public String OpenId { get; set; }
         public String Content { get; set; }
         public DateTime CreateTime { get; set; }
         public List<String> ImageList { get; set; }
