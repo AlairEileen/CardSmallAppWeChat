@@ -187,6 +187,15 @@ namespace CardWXSmallApp.Controllers
                 var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);
                 var update = Builders<AccountCard>.Update.AddToSet(x => x.LocationList, locationCard);
                 var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
+                var list = collection.Find(filter);
+                var accountCard = list.FirstOrDefault();
+                List<LocationCard> locationList = new List<LocationCard>();
+                if (accountCard.LocationList != null)
+                {
+                    locationList.AddRange(accountCard.LocationList);
+                }
+                locationList.Add(locationCard);
+                update = Builders<AccountCard>.Update.Set(x => x.LocationList, locationList);
                 collection.UpdateOne(filter, update);
                 responseModel.StatusCode = (int)ActionParams.code_ok;
             }

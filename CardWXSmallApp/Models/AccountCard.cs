@@ -17,8 +17,8 @@ namespace CardWXSmallApp.Models
         public String AvatarUrl { get; set; }
         public String AccountName { get; set; }
 
-        private int gender = 3;
-        public Int32 Gender { get { return gender; } set { gender = value; } }
+        private int gender = 0;
+        public Int32 Gender { get => gender; set => gender = value; }
         [JsonConverter(typeof(Tools.DateConverter))]
         public DateTime Birthday { get; set; }
         public String PhoneNumber { get; set; }
@@ -31,7 +31,9 @@ namespace CardWXSmallApp.Models
         /// <summary>
         /// 位置列表
         /// </summary>
-        public List<LocationCard> LocationList { get; set; }
+        private List<LocationCard> locationList = new List<LocationCard>();
+        public List<LocationCard> LocationList { get => locationList; set => locationList = value; }
+
         /// <summary>
         /// 名片
         /// </summary>
