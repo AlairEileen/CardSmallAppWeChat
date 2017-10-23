@@ -11,8 +11,8 @@ namespace CardWXSmallApp.Models
     {
         [JsonIgnore]
         public ObjectId Id { get; set; }
-        public Int32[] ProvinceCityIndexArray { get; set; }
-        public String ProvinceName { get; set; }
-        public String CityName { get; set; }
+        public String Province { get; set; }
+        public String City { get; set; }
+        public String District { get; set; }
     }
 }

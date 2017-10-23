@@ -16,7 +16,9 @@ namespace CardWXSmallApp.Models
         public String OpenId { get; set; }
         public String AvatarUrl { get; set; }
         public String AccountName { get; set; }
-        public Int32 Gender { get; set; }
+
+        private int gender = 3;
+        public Int32 Gender { get { return gender; } set { gender = value; } }
         [JsonConverter(typeof(Tools.DateConverter))]
         public DateTime Birthday { get; set; }
         public String PhoneNumber { get; set; }

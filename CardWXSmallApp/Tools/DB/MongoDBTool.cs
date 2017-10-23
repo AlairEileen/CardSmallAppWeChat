@@ -34,5 +34,9 @@ namespace CardWXSmallApp.Tools.DB
             string collectionName = packageName.Substring(packageName.LastIndexOf(".")+1);
             return GetMongoDatabase().GetCollection<T>(collectionName);
         }
+        public IMongoCollection<T> GetMongoCollection<T>(string collectionName)
+        {
+            return GetMongoDatabase().GetCollection<T>(collectionName);
+        }
     }
 }

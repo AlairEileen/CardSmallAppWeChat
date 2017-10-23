@@ -124,7 +124,7 @@ namespace CardWXSmallApp.Controllers
                         fs.Flush();
                         string[] fileUrls = new string[] { filename };
                         FileCard<string[]> fileCard = new FileCard<string[]>() { FileUrlData = fileUrls };
-                        new MongoDBTool().GetMongoCollection<FileCard<string[]>>().InsertOne(fileCard);
+                        new MongoDBTool().GetMongoCollection<FileCard<string[]>>("FileCard").InsertOne(fileCard);
                         resultFileId = fileCard.Id.ToString();
                     }
                     ThreadPool.QueueUserWorkItem(new WaitCallback(Create3Img),new string[] { filename ,resultFileId});
@@ -146,7 +146,7 @@ namespace CardWXSmallApp.Controllers
             string fileId = data[1];
             string fileName = data[0];
             string exString = fileName.Substring(fileName.LastIndexOf("."));
-            string headString = fileName.Substring(0, fileName.LastIndexOf(".") - 1);
+            string headString = fileName.Substring(0, fileName.LastIndexOf("."));
             string nameString = headString.Substring(headString.LastIndexOf("/") + 1);
             nameString = ConstantProperty.BaseDir + ConstantProperty.AlbumDir + $@"{nameString}";
             string fileName1 = $@"{nameString}_1{exString}";
@@ -179,7 +179,7 @@ namespace CardWXSmallApp.Controllers
             }
             if (fileUrls.Count!=1)
             {
-                var collection = new MongoDBTool().GetMongoCollection<FileCard<string[]>>();
+                var collection = new MongoDBTool().GetMongoCollection<FileCard<string[]>>("FileCard");
                 var filter = Builders<FileCard<string[]>>.Filter.Eq(x => x.Id, new ObjectId(fileId));
                 var update = Builders<FileCard<string[]>>.Update.Set(x => x.FileUrlData,fileUrls.ToArray());
                 collection.UpdateOne(filter, update);
