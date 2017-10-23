@@ -58,8 +58,8 @@ namespace CardWXSmallApp.Controllers
             }
             responseModel.StatusCode = stautsCode;
             JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.ContractResolver = new LimitPropsContractResolver(new string[] { "StatusCode", "JsonData.OpenId" });
-            string jsonString = JsonConvert.SerializeObject(responseModel);
+            jsonSerializerSettings.ContractResolver = new LimitPropsContractResolver(new string[] { "StatusCode", "JsonData", "OpenId" });
+            string jsonString = JsonConvert.SerializeObject(responseModel, jsonSerializerSettings);
 
             Console.WriteLine("json**3:" + jsonString);
             return jsonString;
