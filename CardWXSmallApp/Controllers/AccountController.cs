@@ -44,7 +44,8 @@ namespace CardWXSmallApp.Controllers
                     AddressCard addressCard = new AddressCard();
                     addressCard.Province = wXAccount.province;
                     addressCard.City = wXAccount.city;
-                    accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = wXAccount.gender, AvatarUrl = wXAccount.avatarUrl, Address = addressCard, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
+                    int gender = wXAccount.gender == 1 ? 1 : wXAccount.gender == 2 ? 2 : 3;
+                    accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = gender, AvatarUrl = wXAccount.avatarUrl, Address = addressCard, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
                     collection.InsertOne(accountCard);
                 }
             }
@@ -189,6 +190,7 @@ namespace CardWXSmallApp.Controllers
                 var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
                 var list = collection.Find(filter);
                 var accountCard = list.FirstOrDefault();
+                locationCard.Id = ObjectId.GenerateNewId();
                 List<LocationCard> locationList = new List<LocationCard>();
                 if (accountCard.LocationList != null)
                 {
