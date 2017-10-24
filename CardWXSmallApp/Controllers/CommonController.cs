@@ -13,6 +13,7 @@ using System.Drawing.Imaging;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using Microsoft.AspNetCore.Hosting;
+using CardWXSmallApp.Tools.Strings;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,7 +32,7 @@ namespace CardWXSmallApp.Controllers
             ResetProvinceCity();
             JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
             jsonSerializerSettings.ContractResolver = new LimitPropsContractResolver(new string[] { "code", "name", "initial" });
-            string jsonString = JsonConvert.SerializeObject(ConstantProperty.CityProvinceList,jsonSerializerSettings);
+            string jsonString = JsonConvert.SerializeObject(ConstantProperty.CityProvinceList, jsonSerializerSettings);
             return jsonString;
         }
         public string getAllProvince()
@@ -108,8 +109,8 @@ namespace CardWXSmallApp.Controllers
 
         public bool GetPicThumbnail(string sFile, string dFile, int dHeight, int dWidth, int flag)
         {
-           Image iSource = Image.FromStream(FileToStream(sFile));
-            
+            Image iSource = Image.FromStream(FileToStream(sFile));
+
             ImageFormat tFormat = iSource.RawFormat;
             int sW = 0, sH = 0;
 
@@ -185,6 +186,9 @@ namespace CardWXSmallApp.Controllers
             }
         }
 
-       
+        public string TestCN(string text)
+        {
+            return text.GetLetterFirst();
+        }
     }
 }
