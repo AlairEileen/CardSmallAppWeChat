@@ -83,7 +83,7 @@ namespace CardWXSmallApp.Controllers
                         file.CopyTo(fs);
                         fs.Flush();
                         var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);
-                        var update = Builders<AccountCard>.Update.Set(x => x.AvatarUrl, "http://" + Request.Host + "/File/FileDownload" + "?fileUrl=" + saveName);
+                        var update = Builders<AccountCard>.Update.Set(x => x.AvatarUrl, saveName);
                         new MongoDBTool().GetMongoCollection<AccountCard>().UpdateOne(filter, update);
                     }
 

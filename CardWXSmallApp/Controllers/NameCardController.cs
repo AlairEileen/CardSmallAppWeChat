@@ -46,9 +46,15 @@ namespace CardWXSmallApp.Controllers
                     fileCardList = fileList;
 
                 }
+               
                 var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
                 var list = mongo.GetMongoCollection<AccountCard>().Find(filter);
                 var account = list.FirstOrDefault();
+                if (location.Latitude != 0 && location.Longitude != 0 && !string.IsNullOrEmpty(location.GPSAddress))
+                {
+                    location.Id = ObjectId.GenerateNewId();
+                    nameCard.Location = location;
+                }
                 if (fileCardList != null)
                 {
                     if (account.NameCard.Album != null)
