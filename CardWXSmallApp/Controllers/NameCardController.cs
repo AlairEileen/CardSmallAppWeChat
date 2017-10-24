@@ -64,6 +64,7 @@ namespace CardWXSmallApp.Controllers
                     else
                     {
                         albumCard.Id = ObjectId.GenerateNewId();
+                        albumCard.Name = "名片相册";
                         albumCard.CreateTime = DateTime.Now;
                     }
                     if (account.NameCard != null)
