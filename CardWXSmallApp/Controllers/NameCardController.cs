@@ -27,10 +27,17 @@ namespace CardWXSmallApp.Controllers
         [HttpGet]
         public string ChangeNameCard(AccountCard accountCard, NameCard nameCard, AlbumCard albumCard, LocationCard location, string[] fileIdList)
         {
+            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
+            if (accountCard.OpenId == null)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error_null;
+                responseModel.JsonData = $@"参数：openId:{accountCard.OpenId}";
+                return JsonConvert.SerializeObject(responseModel);
+            }
+            responseModel.StatusCode = (int)ActionParams.code_ok;
+
             var mongo = new MongoDBTool();
             List<FileCard<string[]>> fileCardList = null;
-            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
-            responseModel.StatusCode = (int)ActionParams.code_ok;
             try
             {
                 if (fileIdList != null && fileIdList.Count() > 0)

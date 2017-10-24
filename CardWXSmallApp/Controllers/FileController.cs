@@ -147,7 +147,11 @@ namespace CardWXSmallApp.Controllers
             responseModel.JsonData = resultFileId;
             return JsonConvert.SerializeObject(responseModel);
         }
-
+       
+        /// <summary>
+        /// 三级图片生成
+        /// </summary>
+        /// <param name="state"></param>
         private void Create3Img(object state)
         {
             string[] data = (string[])state;

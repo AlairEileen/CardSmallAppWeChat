@@ -36,6 +36,10 @@ namespace CardWXSmallApp.Models
         /// </summary>
         public NameCard NameCard { get; set; }
         /// <summary>
+        /// 名片夹
+        /// </summary>
+        public List<NameCardSave> CardHolder { get; set; }
+        /// <summary>
         /// 相册
         /// </summary>
         public List<AlbumCard> AlbumCardList { get; set; }
@@ -43,5 +47,11 @@ namespace CardWXSmallApp.Models
         /// 关系
         /// </summary>
         public RelationCard Relation { get; set; }
+    }
+
+    public class NameCardSave
+    {
+        public ObjectId Id { get; set; }
+
     }
 }
