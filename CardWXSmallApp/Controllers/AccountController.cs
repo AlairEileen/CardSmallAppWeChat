@@ -73,6 +73,7 @@ namespace CardWXSmallApp.Controllers
         public string FindPersonInfo(string openId)
         {
             BaseResponseModel<AccountCard> responseModel = new BaseResponseModel<AccountCard>();
+
             responseModel.StatusCode = (int)ActionParams.code_ok;
             AccountCard accountCard = null;
             try
@@ -103,7 +104,7 @@ namespace CardWXSmallApp.Controllers
         /// <returns></returns>
         public string ChangePersonInfo(AccountCard accountCard)
         {
-            BaseResponseModel<AccountCard> responseModel = new BaseResponseModel<AccountCard>();
+            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
             responseModel.StatusCode = (int)ActionParams.code_error;
             try
             {
@@ -130,6 +131,12 @@ namespace CardWXSmallApp.Controllers
                 {
                     update = Builders<AccountCard>.Update.Set(x => x.SafeMode, accountCard.SafeMode);
                 }
+                else
+                {
+                    responseModel.StatusCode = (int)ActionParams.code_error_null;
+                    responseModel.JsonData = "没有提交修改的参数！";
+                    return JsonConvert.SerializeObject(responseModel);
+                }
                 new MongoDBTool().GetMongoCollection<AccountCard>().UpdateOne(filter, update);
                 responseModel.StatusCode = (int)ActionParams.code_ok;
             }
@@ -149,6 +156,11 @@ namespace CardWXSmallApp.Controllers
         public string FindAllLocation(string openId)
         {
             BaseResponseModel<List<LocationCard>> responseModel = new BaseResponseModel<List<LocationCard>>();
+            if (openId == null)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error_null;
+                return JsonConvert.SerializeObject(responseModel);
+            }
             responseModel.StatusCode = (int)ActionParams.code_error;
             try
             {
@@ -181,6 +193,12 @@ namespace CardWXSmallApp.Controllers
         {
 
             BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
+            if (openId == null)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error_null;
+                responseModel.JsonData = $@"参数：openId:{openId}";
+                return JsonConvert.SerializeObject(responseModel);
+            }
             responseModel.StatusCode = (int)ActionParams.code_error;
             try
             {
@@ -221,7 +239,14 @@ namespace CardWXSmallApp.Controllers
         public string ChangeAddress(string openId, AddressCard addressCard)
         {
             BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
+            if (openId == null)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error_null;
+                responseModel.JsonData = $@"参数：openId:{openId}";
+                return JsonConvert.SerializeObject(responseModel);
+            }
             responseModel.StatusCode = (int)ActionParams.code_ok;
+
             try
             {
                 var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);

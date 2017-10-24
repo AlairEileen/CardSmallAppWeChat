@@ -15,7 +15,7 @@ namespace CardWXSmallApp.Models
         public String Name { get; set; }
         public String Content { get; set; }
         public DateTime CreateTime { get; set; }
-        public List<String> ImageList { get; set; }
+        public List<FileCard<string[]>> ImageList { get; set; }
 
     }
 }

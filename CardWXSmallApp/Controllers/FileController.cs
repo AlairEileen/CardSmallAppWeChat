@@ -42,7 +42,10 @@ namespace CardWXSmallApp.Controllers
             var stream = System.IO.File.OpenRead(fileUrl);
             return File(stream, "application/vnd.android.package-archive", Path.GetFileName(fileUrl));
         }
-
+        public string Test()
+        {
+            return Request.Host.Host+"~~"+Request.Host.Port;
+        }
         /// <summary>
         /// 头像上传
         /// </summary>
@@ -50,10 +53,17 @@ namespace CardWXSmallApp.Controllers
         /// <returns></returns>
         public string UploadAvatar(string openId)
         {
+            BaseResponseModel<String> responseModel = new BaseResponseModel<String>();
+            if (openId == null)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error_null;
+                responseModel.JsonData = $@"参数：openId:{openId}";
+                return JsonConvert.SerializeObject(responseModel);
+            }
             long size = 0;
             var files = Request.Form.Files;
-            BaseResponseModel<String> responseModel = new BaseResponseModel<String>();
-
+        
+           
             try
             {
                 foreach (var file in files)
@@ -91,7 +101,7 @@ namespace CardWXSmallApp.Controllers
         }
 
         /// <summary>
-        /// 上传文件
+        /// 上传图片
         /// </summary>
         /// <returns></returns>
         public string UploadImage()
@@ -110,24 +120,26 @@ namespace CardWXSmallApp.Controllers
                                     .FileName
                                     .Trim('"');
                     string saveDir = $@"{ConstantProperty.BaseDir}{ConstantProperty.AlbumDir}";
+                    string dbSaveDir = $@"{ConstantProperty.AlbumDir}";
                     if (!Directory.Exists(saveDir))
                     {
                         Directory.CreateDirectory(saveDir);
                     }
                     string exString = filename.Substring(filename.LastIndexOf("."));
                     string saveName = Guid.NewGuid().ToString("N");
-                    filename = $@"{saveDir}{saveName}{exString}"; ;
+                    filename = $@"{saveDir}{saveName}{exString}";
+
                     size += file.Length;
                     using (FileStream fs = System.IO.File.Create(filename))
                     {
                         file.CopyTo(fs);
                         fs.Flush();
-                        string[] fileUrls = new string[] { filename };
+                        string[] fileUrls = new string[] { $@"{dbSaveDir}{saveName}{exString}" };
                         FileCard<string[]> fileCard = new FileCard<string[]>() { FileUrlData = fileUrls };
                         new MongoDBTool().GetMongoCollection<FileCard<string[]>>("FileCard").InsertOne(fileCard);
                         resultFileId = fileCard.Id.ToString();
                     }
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(Create3Img),new string[] { filename ,resultFileId});
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(Create3Img), new string[] { filename, resultFileId });
                 }
                 responseModel.StatusCode = (int)ActionParams.code_ok;
             }
@@ -142,49 +154,45 @@ namespace CardWXSmallApp.Controllers
         private void Create3Img(object state)
         {
             string[] data = (string[])state;
-
             string fileId = data[1];
             string fileName = data[0];
             string exString = fileName.Substring(fileName.LastIndexOf("."));
             string headString = fileName.Substring(0, fileName.LastIndexOf("."));
             string nameString = headString.Substring(headString.LastIndexOf("/") + 1);
-            nameString = ConstantProperty.BaseDir + ConstantProperty.AlbumDir + $@"{nameString}";
-            string fileName1 = $@"{nameString}_1{exString}";
-            string fileName2 = $@"{nameString}_2{exString}";
+            nameString = $@"{ConstantProperty.AlbumDir }{nameString}";
+            string fileName1 = $@"{headString}_1{exString}";
+            string fileName1Db= $@"{nameString}_1{exString}";
+            string fileName2 = $@"{headString}_2{exString}";
+            string fileName2Db = $@"{nameString}_2{exString}";
             string error1 = "", error2 = "";
-
-          
-           
             bool hasFile1 = new ImageTool().GetCompressImage(fileName, fileName1, 800, 800, 80, out error1);
-           
-           
-
             bool hasFile2 = new ImageTool().GetCompressImage(fileName, fileName2, 200, 200, 60, out error2);
             List<string> fileUrls = new List<string>();
-            fileUrls.Add(fileName);
-            if (hasFile1&&hasFile2)
+            fileUrls.Add($@"{nameString}{exString}");
+            if (hasFile1 && hasFile2)
             {
-                fileUrls.Add(fileName1);
-                fileUrls.Add(fileName2);
+                fileUrls.Add(fileName1Db);
+                fileUrls.Add(fileName2Db);
             }
-            if (!hasFile1&&hasFile2)
+            else if (!hasFile1 && hasFile2)
             {
-                fileUrls.Add(fileName);
-                fileUrls.Add(fileName2);
+                fileUrls.Add($@"{nameString}{exString}");
+                fileUrls.Add(fileName2Db);
             }
-            if (hasFile1&&!hasFile2)
+            else if (hasFile1 && !hasFile2)
             {
-                fileUrls.Add(fileName1);
-                fileUrls.Add(fileName);
+                fileUrls.Add(fileName1Db);
+                fileUrls.Add($@"{nameString}{exString}");
             }
-            if (fileUrls.Count!=1)
+
+            if (fileUrls.Count != 1)
             {
                 var collection = new MongoDBTool().GetMongoCollection<FileCard<string[]>>("FileCard");
                 var filter = Builders<FileCard<string[]>>.Filter.Eq(x => x.Id, new ObjectId(fileId));
-                var update = Builders<FileCard<string[]>>.Update.Set(x => x.FileUrlData,fileUrls.ToArray());
+                var update = Builders<FileCard<string[]>>.Update.Set(x => x.FileUrlData, fileUrls.ToArray());
                 collection.UpdateOne(filter, update);
             }
-         
+
         }
 
 

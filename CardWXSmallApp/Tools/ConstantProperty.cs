@@ -18,5 +18,6 @@ namespace CardWXSmallApp.Tools
         /// 省市区对象
         /// </summary>
         public static List<ProvinceCity> CityProvinceList{ get; set; }
+
     }
 }
