@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -35,7 +36,8 @@ namespace CardWXSmallApp.Controllers
             if (wXAccount.openId != null)
             {
                 var filter = Builders<AccountCard>.Filter.And(Builders<AccountCard>.Filter.Eq(x => x.OpenId, wXAccount.openId));
-                var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
+                var dbTool = new MongoDBTool();
+                var collection = dbTool.GetMongoCollection<AccountCard>();
                 var update = Builders<AccountCard>.Update.Set(x => x.LastLoginTime, DateTime.Now);
                 accountCard = collection.FindOneAndUpdate<AccountCard>(filter, update);
 
@@ -45,7 +47,8 @@ namespace CardWXSmallApp.Controllers
                     addressCard.Province = wXAccount.province;
                     addressCard.City = wXAccount.city;
                     int gender = wXAccount.gender == 1 ? 1 : wXAccount.gender == 2 ? 2 : 3;
-                    accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = gender, AvatarUrl = wXAccount.avatarUrl, Address = addressCard, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
+                    string avatarUrl = DownloadAvatar(wXAccount.avatarUrl, wXAccount.openId, dbTool);
+                    accountCard = new AccountCard() { OpenId = wXAccount.openId, AccountName = wXAccount.nickName, Gender = gender, AvatarUrl = avatarUrl, Address = addressCard, CreateTime = DateTime.Now, LastLoginTime = DateTime.Now };
                     collection.InsertOne(accountCard);
                 }
             }
@@ -63,6 +66,32 @@ namespace CardWXSmallApp.Controllers
 
             Console.WriteLine("json**3:" + jsonString);
             return jsonString;
+        }
+
+        private string DownloadAvatar(string avatarUrl, string openId, MongoDBTool dbTool)
+        {
+
+            //HttpWebRequest httpWebRequest = (HttpWebRequest)HttpWebRequest.Create(avatarUrl);
+            //httpWebRequest.Method = "GET";
+            //httpWebRequest.ServicePoint.ConnectionLimit = int.MaxValue;
+            //HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            //string type = httpWebResponse.ContentType;
+            //type = type.LastIndexOf("/") == -1 ? type : type.Substring(type.LastIndexOf("/")+1);
+            //using (Stream stream = httpWebResponse.GetResponseStream())
+            //{
+            //    using (FileStream fs=new FileStream($@"{ConstantProperty.BaseDir}{ConstantProperty.AvatarDir}{openId}{type}",FileMode.Create))
+            //    {
+            //        stream.re
+
+            //        fs.Write();
+            //    }
+            //}
+            WebClient webClient = new WebClient();
+            string saveDBName = $@"{ConstantProperty.AvatarDir}{openId}.jpg";
+            string saveFileName = $@"{ConstantProperty.BaseDir}{saveDBName}";
+            webClient.DownloadFile(avatarUrl, saveFileName);
+          
+            return saveDBName;
         }
 
         /// <summary>

@@ -42,10 +42,7 @@ namespace CardWXSmallApp.Controllers
             var stream = System.IO.File.OpenRead(fileUrl);
             return File(stream, "application/vnd.android.package-archive", Path.GetFileName(fileUrl));
         }
-        public string Test()
-        {
-            return Request.Host.Host+"~~"+Request.Host.Port;
-        }
+    
         /// <summary>
         /// 头像上传
         /// </summary>
