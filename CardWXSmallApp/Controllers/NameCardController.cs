@@ -15,7 +15,7 @@ namespace CardWXSmallApp.Controllers
 {
     public class NameCardController : Controller
     {
-        NameCardData nameCardData=new NameCardData();
+        NameCardData nameCardData = new NameCardData();
 
         /// <summary>
         /// 修改名片信息
@@ -89,6 +89,8 @@ namespace CardWXSmallApp.Controllers
                 nameCard.Album = albumCard;
                 var update = Builders<AccountCard>.Update.Set(x => x.NameCard, nameCard).Set(x => x.PhoneNumber, accountCard.PhoneNumber).Set(x => x.AccountName, accountCard.AccountName).Set(x => x.NameCard, nameCard);
                 mongo.GetMongoCollection<AccountCard>().UpdateOne(filter, update);
+                ///重置关联信息
+                nameCardData.ResetCardHolder(accountCard.OpenId);
             }
             catch (Exception)
             {
@@ -104,10 +106,12 @@ namespace CardWXSmallApp.Controllers
         /// 获取名片列表
         /// </summary>
         /// <param name="accountCard"></param>
+        /// <param name="sortType">0：名称正序，1：公司名正序，2：时间倒序</param>
+        /// <param name="searchParam"></param>
         /// <returns></returns>
-        public string GetAllNameCard(AccountCard accountCard)
+        public string GetAllNameCard(AccountCard accountCard, int sortType, string searchParam)
         {
-            BaseResponseModel<List<NameCardSave>> responseModel = new BaseResponseModel<List<NameCardSave>>();
+            BaseResponseModel<IEnumerable<IGrouping<string, NameCardSave>>> responseModel = new BaseResponseModel<IEnumerable<IGrouping<string, NameCardSave>>>();
             if (accountCard.OpenId == null)
             {
                 responseModel.StatusCode = (int)ActionParams.code_error_null;
@@ -117,26 +121,35 @@ namespace CardWXSmallApp.Controllers
             try
             {
                 accountCard = new MongoDBTool().GetMongoCollection<AccountCard>().Find(x => x.OpenId.Equals(accountCard.OpenId)).FirstOrDefault();
-                var list = accountCard.CardHolder;
-                responseModel.JsonData = list;
+                List<NameCardSave> list = new List<NameCardSave>();
+                list = accountCard.CardHolder;
+                if (searchParam != null)
+                {
+                    list = accountCard.CardHolder.FindAll(x => x.AccountName.Contains(searchParam) || x.Post.Contains(searchParam));
+                }
+                var groupList = list.GroupBy(x => sortType == 0? x.AccountNameLetterFirst : sortType == 1 ? x.PostLetterFirst : x.CreateTime);
+                responseModel.JsonData = groupList;
             }
             catch (Exception)
             {
                 responseModel.StatusCode = (int)ActionParams.code_error;
                 //throw;
             }
+
             return JsonConvert.SerializeObject(responseModel);
         }
+
         /// <summary>
         /// 收藏或者移出名片
         /// </summary>
-        /// <param name="myOpenId"></param>
-        /// <param name="hisOpenId"></param>
+        /// <param name="thisOpenId"></param>
+        /// <param name="thatOpenId"></param>
         /// <returns></returns>
-        public string PutToCardHolder(string myOpenId, string hisOpenId)
+        [HttpGet]
+        public string PushOrPullCard(string thisOpenId, string thatOpenId)
         {
             BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
-            if (string.IsNullOrEmpty(myOpenId) || string.IsNullOrEmpty(hisOpenId))
+            if (string.IsNullOrEmpty(thisOpenId) || string.IsNullOrEmpty(thatOpenId))
             {
                 responseModel.StatusCode = (int)ActionParams.code_error_null;
                 return JsonConvert.SerializeObject(responseModel);
@@ -144,7 +157,7 @@ namespace CardWXSmallApp.Controllers
             responseModel.StatusCode = (int)ActionParams.code_ok;
             try
             {
-                nameCardData.PullOrPushCardHolder(myOpenId, hisOpenId);
+                nameCardData.PullOrPushCardHolder(thisOpenId, thatOpenId);
 
             }
             catch (Exception)

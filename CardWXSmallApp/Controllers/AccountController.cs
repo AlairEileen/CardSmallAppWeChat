@@ -1,4 +1,5 @@
-﻿using CardWXSmallApp.Models;
+﻿using CardWXSmallApp.AppData.DB;
+using CardWXSmallApp.Models;
 using CardWXSmallApp.ResponseModels;
 using CardWXSmallApp.Tools;
 using CardWXSmallApp.Tools.DB;
@@ -20,6 +21,7 @@ namespace CardWXSmallApp.Controllers
     public class AccountController : Controller
     {
 
+        NameCardData nameCardData = new NameCardData();
 
         /// <summary>
         /// 请求登录
@@ -155,7 +157,10 @@ namespace CardWXSmallApp.Controllers
                     return JsonConvert.SerializeObject(responseModel);
                 }
                 new MongoDBTool().GetMongoCollection<AccountCard>().UpdateOne(filter, update);
+                ///重置关联信息
+                nameCardData.ResetCardHolder(accountCard.OpenId);
                 responseModel.StatusCode = (int)ActionParams.code_ok;
+
             }
             catch (Exception)
             {

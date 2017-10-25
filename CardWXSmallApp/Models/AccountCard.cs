@@ -67,6 +67,7 @@ namespace CardWXSmallApp.Models
         public String Post { get; set; }
         public String PostLetterFirst { get; set; }
         public String PhoneNumber { get; set; }
+        public String CreateTime { get; set; }
 
     }
 }
