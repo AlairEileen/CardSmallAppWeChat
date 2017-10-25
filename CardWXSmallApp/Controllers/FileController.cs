@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Threading;
 using MongoDB.Bson;
 using System.Collections.Generic;
+using CardWXSmallApp.AppData.DB;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +21,7 @@ namespace CardWXSmallApp.Controllers
     public class FileController : Controller
     {
 
+        NameCardData nameCardData = new NameCardData();
 
         private IHostingEnvironment hostingEnvironment;
         public FileController(IHostingEnvironment environment)
@@ -42,7 +44,7 @@ namespace CardWXSmallApp.Controllers
             var stream = System.IO.File.OpenRead(fileUrl);
             return File(stream, "application/vnd.android.package-archive", Path.GetFileName(fileUrl));
         }
-    
+
         /// <summary>
         /// 头像上传
         /// </summary>
@@ -59,8 +61,8 @@ namespace CardWXSmallApp.Controllers
             }
             long size = 0;
             var files = Request.Form.Files;
-        
-           
+
+
             try
             {
                 foreach (var file in files)
@@ -85,8 +87,8 @@ namespace CardWXSmallApp.Controllers
                         var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);
                         var update = Builders<AccountCard>.Update.Set(x => x.AvatarUrl, saveName);
                         var dbTool = new MongoDBTool();
-                       dbTool.GetMongoCollection<AccountCard>().UpdateOne(filter, update);
-                        UpdateAvatar(openId,saveName,dbTool);
+                        dbTool.GetMongoCollection<AccountCard>().UpdateOne(filter, update);
+                        UpdateAvatar(openId, saveName, dbTool);
                     }
 
                 }
@@ -107,7 +109,8 @@ namespace CardWXSmallApp.Controllers
         /// <param name="dbTool"></param>
         private void UpdateAvatar(string openId, string saveName, MongoDBTool dbTool)
         {
-            UpdateCardHolder(openId,saveName,dbTool);
+            //UpdateCardHolder(openId,saveName,dbTool);
+            nameCardData.ResetCardHolder(openId);
         }
         /// <summary>
         /// 更新名片夹头像信息
@@ -117,12 +120,12 @@ namespace CardWXSmallApp.Controllers
         /// <param name="dbTool"></param>
         private void UpdateCardHolder(string openId, string saveName, MongoDBTool dbTool)
         {
-            var collection=dbTool.GetMongoCollection<AccountCard>();
-            var thisAccount=collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            var collection = dbTool.GetMongoCollection<AccountCard>();
+            var thisAccount = collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
             ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
             for (int i = 0; i < thisAccount.CardHolderReceive.Count; i++)
             {
-                objectIds[i] =thisAccount.CardHolderReceive[i].Id;
+                objectIds[i] = thisAccount.CardHolderReceive[i].Id;
             }
             var listFilter = Builders<AccountCard>.Filter.In(x => x.Id, objectIds);
             var list = collection.Find(listFilter).ToList();
@@ -136,7 +139,7 @@ namespace CardWXSmallApp.Controllers
                     if (item1.Id.Equals(thisAccount.Id))
                     {
                         item1.AvatarUrl = saveName;
-                       
+
                     }
                     saveList.Add(item1);
                 }
@@ -150,7 +153,7 @@ namespace CardWXSmallApp.Controllers
                     saveListRe.Add(item1);
                 }
                 var update = Builders<AccountCard>.Update.Set(x => x.CardHolder, saveList).Set(x => x.CardHolderReceive, saveListRe);
-                collection.UpdateOne(x=>x.Id.Equals(item.Id),update);
+                collection.UpdateOne(x => x.Id.Equals(item.Id), update);
             }
         }
 
@@ -206,7 +209,7 @@ namespace CardWXSmallApp.Controllers
             responseModel.JsonData = resultFileId;
             return JsonConvert.SerializeObject(responseModel);
         }
-       
+
         /// <summary>
         /// 三级图片生成
         /// </summary>
@@ -221,7 +224,7 @@ namespace CardWXSmallApp.Controllers
             string nameString = headString.Substring(headString.LastIndexOf("/") + 1);
             nameString = $@"{ConstantProperty.AlbumDir }{nameString}";
             string fileName1 = $@"{headString}_1{exString}";
-            string fileName1Db= $@"{nameString}_1{exString}";
+            string fileName1Db = $@"{nameString}_1{exString}";
             string fileName2 = $@"{headString}_2{exString}";
             string fileName2Db = $@"{nameString}_2{exString}";
             string error1 = "", error2 = "";

@@ -15,7 +15,7 @@ namespace CardWXSmallApp.Controllers
 {
     public class NameCardController : Controller
     {
-        NameCardData nameCardData;
+        NameCardData nameCardData=new NameCardData();
 
         /// <summary>
         /// 修改名片信息

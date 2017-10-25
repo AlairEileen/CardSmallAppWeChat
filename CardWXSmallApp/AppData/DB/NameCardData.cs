@@ -1,6 +1,7 @@
 ﻿using CardWXSmallApp.Models;
 using CardWXSmallApp.Tools.DB;
 using CardWXSmallApp.Tools.Strings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -83,48 +84,55 @@ namespace CardWXSmallApp.AppData.DB
         #endregion
 
         /// <summary>
-        /// 更新名片夹头像信息
+        /// 重建名片关联信息
         /// </summary>
         /// <param name="openId"></param>
         /// <param name="saveName"></param>
         /// <param name="dbTool"></param>
-        private void UpdateCardHolder(string openId, string saveName, MongoDBTool dbTool)
+        internal void ResetCardHolder(string openId)
         {
-            //var collection = dbTool.GetMongoCollection<AccountCard>();
-            //var thisAccount = collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
-            //ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
-            //for (int i = 0; i < thisAccount.CardHolderReceive.Count; i++)
-            //{
-            //    objectIds[i] = thisAccount.CardHolderReceive[i].Id;
-            //}
-            //var listFilter = Builders<AccountCard>.Filter.In(x => x.Id, objectIds);
-            //var list = collection.Find(listFilter).ToList();
-            //foreach (var item in list)
-            //{
-            //    List<NameCardSave> saveList = new List<NameCardSave>();
-            //    List<NameCardSave> saveListRe = new List<NameCardSave>();
+            var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
+            var thisAccount = collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
+            for (int i = 0; i < thisAccount.CardHolderReceive.Count; i++)
+            {
+                objectIds[i] = thisAccount.CardHolderReceive[i].Id;
+            }
+            var list = collection.Find(Builders<AccountCard>.Filter.In(x => x.Id, objectIds)).ToList();
+            foreach (var item in list)
+            {
+                List<NameCardSave> saveList = new List<NameCardSave>();
+                List<NameCardSave> saveListRe = new List<NameCardSave>();
 
-            //    foreach (var item1 in item.CardHolder)
-            //    {
-            //        if (item1.Id.Equals(thisAccount.Id))
-            //        {
-            //            item1.AvatarUrl = saveName;
+                foreach (var item1 in item.CardHolder)
+                {
+                    if (item1.Id.Equals(thisAccount.Id))
+                    {
+                        item1.AvatarUrl = thisAccount.AvatarUrl;
+                        item1.AccountName = thisAccount.AccountName;
+                        item1.AccountNameLetterFirst = thisAccount.AccountName.GetLetterFirst();
+                        item1.Post = thisAccount.NameCard!=null?thisAccount.NameCard.Post:"";
+                        item1.PostLetterFirst = thisAccount.NameCard != null ? thisAccount.NameCard.Post.GetLetterFirst() : "";
 
-            //        }
-            //        saveList.Add(item1);
-            //    }
-            //    foreach (var item1 in item.CardHolderReceive)
-            //    {
-            //        if (item1.Id.Equals(thisAccount.Id))
-            //        {
-            //            item1.AvatarUrl = saveName;
+                    }
+                    saveList.Add(item1);
+                }
+                foreach (var item1 in item.CardHolderReceive)
+                {
+                    if (item1.Id.Equals(thisAccount.Id))
+                    {
+                        item1.AvatarUrl = thisAccount.AvatarUrl;
+                        item1.AccountName = thisAccount.AccountName;
+                        item1.AccountNameLetterFirst = thisAccount.AccountName.GetLetterFirst();
+                        item1.Post = thisAccount.NameCard != null ? thisAccount.NameCard.Post : "";
+                        item1.PostLetterFirst = thisAccount.NameCard != null ? thisAccount.NameCard.Post.GetLetterFirst() : "";
 
-            //        }
-            //        saveListRe.Add(item1);
-            //    }
-            //    var update = Builders<AccountCard>.Update.Set(x => x.CardHolder, saveList).Set(x => x.CardHolderReceive, saveListRe);
-            //    collection.UpdateOne(x => x.Id.Equals(item.Id), update);
-            //}
+                    }
+                    saveListRe.Add(item1);
+                }
+                var update = Builders<AccountCard>.Update.Set(x => x.CardHolder, saveList).Set(x => x.CardHolderReceive, saveListRe);
+                collection.UpdateOne(x => x.Id.Equals(item.Id), update);
+            }
         }
     }
 }
