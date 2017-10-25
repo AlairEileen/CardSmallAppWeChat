@@ -66,7 +66,7 @@ namespace CardWXSmallApp.Controllers
                 }
                 if (fileCardList != null)
                 {
-                    if (account.NameCard.Album != null)
+                    if (account.NameCard != null && account.NameCard.Album != null)
                     {
                         albumCard.Id = albumCard.Id = account.NameCard.Album.Id;
                     }
