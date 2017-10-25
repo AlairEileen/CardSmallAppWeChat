@@ -1,7 +1,7 @@
-﻿using CardWXSmallApp.Models;
+﻿using CardWXSmallApp.AppData.DB;
+using CardWXSmallApp.Models;
 using CardWXSmallApp.ResponseModels;
 using CardWXSmallApp.Tools;
-using CardWXSmallApp.Tools.DB;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;

@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using CardWXSmallApp.Tools;
 using System.IO;
 using MongoDB.Driver;
-using CardWXSmallApp.Tools.DB;
 using CardWXSmallApp.Models;
 using Microsoft.AspNetCore.Hosting;
 using CardWXSmallApp.ResponseModels;
@@ -101,6 +100,7 @@ namespace CardWXSmallApp.Controllers
             }
             return JsonConvert.SerializeObject(responseModel);
         }
+       
         /// <summary>
         /// 更新头像后的联动更新
         /// </summary>
@@ -112,6 +112,7 @@ namespace CardWXSmallApp.Controllers
             //UpdateCardHolder(openId,saveName,dbTool);
             nameCardData.ResetCardHolder(openId);
         }
+       
         /// <summary>
         /// 更新名片夹头像信息
         /// </summary>
@@ -156,8 +157,6 @@ namespace CardWXSmallApp.Controllers
                 collection.UpdateOne(x => x.Id.Equals(item.Id), update);
             }
         }
-
-
 
         /// <summary>
         /// 上传图片

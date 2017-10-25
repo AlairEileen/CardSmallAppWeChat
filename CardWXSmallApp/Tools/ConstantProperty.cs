@@ -14,10 +14,7 @@ namespace CardWXSmallApp.Tools
         public const string AvatarDir = "avatar/";
         public const string TempDir = "temp/";
         public const string AlbumDir = "album/";
-        /// <summary>
-        /// 省市区对象
-        /// </summary>
-        public static List<ProvinceCity> CityProvinceList{ get; set; }
+       
 
     }
 }

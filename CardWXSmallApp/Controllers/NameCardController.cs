@@ -2,7 +2,6 @@
 using CardWXSmallApp.Models;
 using CardWXSmallApp.ResponseModels;
 using CardWXSmallApp.Tools;
-using CardWXSmallApp.Tools.DB;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -167,11 +166,5 @@ namespace CardWXSmallApp.Controllers
             }
             return JsonConvert.SerializeObject(responseModel);
         }
-
-
-
-
-
-
     }
 }

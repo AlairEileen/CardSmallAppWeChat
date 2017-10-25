@@ -1,11 +1,11 @@
 ﻿using CardWXSmallApp.Models;
-using CardWXSmallApp.Tools.DB;
 using CardWXSmallApp.Tools.Strings;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CardWXSmallApp.AppData.DB
@@ -82,6 +82,8 @@ namespace CardWXSmallApp.AppData.DB
             }
         }
         #endregion
+       
+        #region 重建名片关联信息
 
         /// <summary>
         /// 重建名片关联信息
@@ -91,6 +93,16 @@ namespace CardWXSmallApp.AppData.DB
         /// <param name="dbTool"></param>
         internal void ResetCardHolder(string openId)
         {
+            ThreadPool.QueueUserWorkItem(new WaitCallback(ProcessResetCardHolder), openId);
+
+        }
+        /// <summary>
+        /// 执行线程
+        /// </summary>
+        /// <param name="state"></param>
+        private void ProcessResetCardHolder(object state)
+        {
+            string openId = (string)state;
             var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
             var thisAccount = collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
             ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
@@ -111,7 +123,7 @@ namespace CardWXSmallApp.AppData.DB
                         item1.AvatarUrl = thisAccount.AvatarUrl;
                         item1.AccountName = thisAccount.AccountName;
                         item1.AccountNameLetterFirst = thisAccount.AccountName.GetLetterFirst();
-                        item1.Post = thisAccount.NameCard!=null?thisAccount.NameCard.Post:"";
+                        item1.Post = thisAccount.NameCard != null ? thisAccount.NameCard.Post : "";
                         item1.PostLetterFirst = thisAccount.NameCard != null ? thisAccount.NameCard.Post.GetLetterFirst() : "";
 
                     }
@@ -133,6 +145,7 @@ namespace CardWXSmallApp.AppData.DB
                 var update = Builders<AccountCard>.Update.Set(x => x.CardHolder, saveList).Set(x => x.CardHolderReceive, saveListRe);
                 collection.UpdateOne(x => x.Id.Equals(item.Id), update);
             }
-        }
+        } 
+        #endregion
     }
 }
