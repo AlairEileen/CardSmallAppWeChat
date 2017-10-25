@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace CardWXSmallApp.Models
 {
-    [JsonConverter(typeof(Tools.ObjectIdConverter))]
-
     public class FileCard<T>
     {
+        [JsonConverter(typeof(Tools.ObjectIdConverter))]
         public ObjectId Id { get; set; }
         /// <summary>
         /// 0：源文件，1：中压缩文件，2：最小文件
