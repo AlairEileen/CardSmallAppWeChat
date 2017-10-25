@@ -84,7 +84,9 @@ namespace CardWXSmallApp.Controllers
                         fs.Flush();
                         var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, openId);
                         var update = Builders<AccountCard>.Update.Set(x => x.AvatarUrl, saveName);
-                        new MongoDBTool().GetMongoCollection<AccountCard>().UpdateOne(filter, update);
+                        var dbTool = new MongoDBTool();
+                       dbTool.GetMongoCollection<AccountCard>().UpdateOne(filter, update);
+                        UpdateAvatar(openId,saveName,dbTool);
                     }
 
                 }
@@ -93,9 +95,66 @@ namespace CardWXSmallApp.Controllers
             catch (Exception)
             {
                 responseModel.StatusCode = (int)ActionParams.code_error;
+                throw;
             }
             return JsonConvert.SerializeObject(responseModel);
         }
+        /// <summary>
+        /// 更新头像后的联动更新
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <param name="saveName"></param>
+        /// <param name="dbTool"></param>
+        private void UpdateAvatar(string openId, string saveName, MongoDBTool dbTool)
+        {
+            UpdateCardHolder(openId,saveName,dbTool);
+        }
+        /// <summary>
+        /// 更新名片夹头像信息
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <param name="saveName"></param>
+        /// <param name="dbTool"></param>
+        private void UpdateCardHolder(string openId, string saveName, MongoDBTool dbTool)
+        {
+            var collection=dbTool.GetMongoCollection<AccountCard>();
+            var thisAccount=collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
+            for (int i = 0; i < thisAccount.CardHolderReceive.Count; i++)
+            {
+                objectIds[i] =thisAccount.CardHolderReceive[i].Id;
+            }
+            var listFilter = Builders<AccountCard>.Filter.In(x => x.Id, objectIds);
+            var list = collection.Find(listFilter).ToList();
+            foreach (var item in list)
+            {
+                List<NameCardSave> saveList = new List<NameCardSave>();
+                List<NameCardSave> saveListRe = new List<NameCardSave>();
+
+                foreach (var item1 in item.CardHolder)
+                {
+                    if (item1.Id.Equals(thisAccount.Id))
+                    {
+                        item1.AvatarUrl = saveName;
+                       
+                    }
+                    saveList.Add(item1);
+                }
+                foreach (var item1 in item.CardHolderReceive)
+                {
+                    if (item1.Id.Equals(thisAccount.Id))
+                    {
+                        item1.AvatarUrl = saveName;
+
+                    }
+                    saveListRe.Add(item1);
+                }
+                var update = Builders<AccountCard>.Update.Set(x => x.CardHolder, saveList).Set(x => x.CardHolderReceive, saveListRe);
+                collection.UpdateOne(x=>x.Id.Equals(item.Id),update);
+            }
+        }
+
+
 
         /// <summary>
         /// 上传图片

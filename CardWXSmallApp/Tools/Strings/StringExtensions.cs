@@ -13,7 +13,7 @@ namespace CardWXSmallApp.Tools.Strings
             {
                 return null;
             }
-            string str = "Nan";
+            string str = "#";
             char firstChar = text.ToArray()[0];
             if ((firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z'))///首字母如果是字母获取到字母直接返回
             {
