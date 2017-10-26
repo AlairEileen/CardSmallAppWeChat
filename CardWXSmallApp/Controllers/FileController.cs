@@ -167,7 +167,7 @@ namespace CardWXSmallApp.Controllers
             long size = 0;
             var files = Request.Form.Files;
             string resultFileId = null;
-            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
+            BaseResponseModel<string[]> responseModel = new BaseResponseModel<string[]>();
 
             try
             {
@@ -197,6 +197,7 @@ namespace CardWXSmallApp.Controllers
                         new MongoDBTool().GetMongoCollection<FileCard<string[]>>("FileCard").InsertOne(fileCard);
                         resultFileId = fileCard.Id.ToString();
                     }
+
                     ThreadPool.QueueUserWorkItem(new WaitCallback(Create3Img), new string[] { filename, resultFileId });
                 }
                 responseModel.StatusCode = (int)ActionParams.code_ok;
@@ -205,7 +206,7 @@ namespace CardWXSmallApp.Controllers
             {
                 responseModel.StatusCode = (int)ActionParams.code_error;
             }
-            responseModel.JsonData = resultFileId;
+            responseModel.JsonData =new string[] { resultFileId };
             return JsonConvert.SerializeObject(responseModel);
         }
 

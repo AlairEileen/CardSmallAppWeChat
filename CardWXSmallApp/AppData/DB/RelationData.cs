@@ -38,10 +38,19 @@ namespace CardWXSmallApp.AppData.DB
             {
                 return;
             }
-            if (thisAccount.CardHolderReceive == null)
-            {
-                return;
-            }
+         
+            ///人气
+            ///
+
+            ///赞
+            ///
+
+
+
+
+
+
+
             ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
             for (int i = 0; i < thisAccount.CardHolderReceive.Count; i++)
             {
