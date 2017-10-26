@@ -83,7 +83,7 @@ namespace CardWXSmallApp.Controllers
                     }
                     if (!relationContent.PopularList.Exists(x => x.RelatedPerson.Id.Equals(accountRelation.Id)))
                     {
-                        relationContent.PopularList.Add(new Popular() { CreateTime = DateTime.Now, RelatedPerson = accountRelation });
+                        relationContent.PopularList.Add(new Popular() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation });
                         relationContent.PopularCount = relationContent.PopularList.Count();
                     }
                     break;
@@ -95,7 +95,7 @@ namespace CardWXSmallApp.Controllers
                     Fabulous fabulous = relationContent.FabulousList.Find(x => x.RelatedPerson.Id.Equals(accountRelation.Id));
                     if (fabulous == null)
                     {
-                        relationContent.FabulousList.Add(new Fabulous() { CreateTime = DateTime.Now, RelatedPerson = accountRelation });
+                        relationContent.FabulousList.Add(new Fabulous() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation });
                     }
                     else
                     {
@@ -109,7 +109,7 @@ namespace CardWXSmallApp.Controllers
                     {
                         relationContent.LeaveWordList = new List<LeaveWord>();
                     }
-                    relationContent.LeaveWordList.Add(new LeaveWord() { CreateTime = DateTime.Now, RelatedPerson = accountRelation, Content = content });
+                    relationContent.LeaveWordList.Add(new LeaveWord() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation, Content = content });
                     relationContent.LeaveWordCount = relationContent.LeaveWordList.Count();
                     break;
             }
@@ -121,7 +121,7 @@ namespace CardWXSmallApp.Controllers
             thatAccountRelation = new AccountRelation() { AccountName = thatAccount.AccountName, AvatarUrl = thatAccount.AvatarUrl, Id = thatAccount.Id, OpenId = thatAccount.OpenId, Post = thatAccount.NameCard == null ? "暂无" : thatAccount.NameCard.Post };
             if (thisAccount.Relation == null)
             {
-                thisAccount.Relation = new RelationCard() { Id=ObjectId.GenerateNewId()};
+                thisAccount.Relation = new RelationCard() { Id = ObjectId.GenerateNewId() };
             }
             if (thatAccount.Relation == null)
             {

@@ -162,7 +162,7 @@ namespace CardWXSmallApp.Controllers
         /// 上传图片
         /// </summary>
         /// <returns></returns>
-        public string UploadImage()
+        public string UploadImage(string openId)
         {
             long size = 0;
             var files = Request.Form.Files;
