@@ -100,7 +100,7 @@ namespace CardWXSmallApp.Controllers
             }
             return JsonConvert.SerializeObject(responseModel);
         }
-       
+
         /// <summary>
         /// 更新头像后的联动更新
         /// </summary>
@@ -112,7 +112,7 @@ namespace CardWXSmallApp.Controllers
             //UpdateCardHolder(openId,saveName,dbTool);
             nameCardData.ResetCardHolder(openId);
         }
-       
+
         /// <summary>
         /// 更新名片夹头像信息
         /// </summary>
@@ -167,7 +167,7 @@ namespace CardWXSmallApp.Controllers
             long size = 0;
             var files = Request.Form.Files;
             string resultFileId = null;
-            BaseResponseModel<string[]> responseModel = new BaseResponseModel<string[]>();
+            BaseResponseModel<FileCard<string[]>> responseModel = new BaseResponseModel<FileCard<string[]>>();
 
             try
             {
@@ -206,7 +206,7 @@ namespace CardWXSmallApp.Controllers
             {
                 responseModel.StatusCode = (int)ActionParams.code_error;
             }
-            responseModel.JsonData =new string[] { resultFileId };
+            responseModel.JsonData = new FileCard<string[]>() { Id = new ObjectId(resultFileId) };
             return JsonConvert.SerializeObject(responseModel);
         }
 
