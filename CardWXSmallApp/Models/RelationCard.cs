@@ -21,65 +21,29 @@ namespace CardWXSmallApp.Models
     {
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
         public ObjectId Id { get; set; }
-        public Int32 LeaveWordCount
-        {
-            get
-            {
-                if (LeaveWordList != null)
-                {
-                    LeaveWordCount = LeaveWordList.Count;
-                }
-                return LeaveWordCount;
-            }
-            set { LeaveWordCount = value; }
-        }
-        public Int32 PopularCount
-        {
-            get
-            {
-                if (PopularList != null)
-                {
-                    PopularCount = PopularList.Count;
-                }
-                return PopularCount;
-            }
-            set { PopularCount = value; }
-        }
-        public Int32 FabulousCount
-        {
-            get
-            {
-                if (FabulousList != null)
-                {
-                    FabulousCount = FabulousList.Count;
-                }
-                return FabulousCount;
-            }
-            set { FabulousCount = value; }
-        }
-        public Int32 PeopleCount
-        {
-            get
-            {
-                if (PeopleList != null)
-                {
-                    PeopleCount = PeopleList.Count;
-                }
-                return PeopleCount;
-            }
-            set { PeopleCount = value; }
-        }
+        public Int32 LeaveWordCount{get; set;}
+        public Int32 PopularCount{get; set;}
+        public Int32 FabulousCount { get; set;}
+
+        /// <summary>
+        /// 留言
+        /// </summary>
         public List<LeaveWord> LeaveWordList { get; set; }
+        /// <summary>
+        /// 人气
+        /// </summary>
         public List<Popular> PopularList { get; set; }
+        /// <summary>
+        /// 赞
+        /// </summary>
         public List<Fabulous> FabulousList { get; set; }
-        public List<People> PeopleList { get; set; }
     }
 
     public class LeaveWord
     {
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
         public ObjectId Id { get; set; }
-        public String content { get; set; }
+        public String Content { get; set; }
         public DateTime CreateTime { get; set; }
         /// <summary>
         /// 关联人
@@ -94,7 +58,7 @@ namespace CardWXSmallApp.Models
         public String OpenId { get; set; }
         public String AvatarUrl { get; set; }
         public String AccountName { get; set; }
-        public String Company { get; set; }
+        public String Post { get; set; }
     }
 
     public class Popular
@@ -119,14 +83,4 @@ namespace CardWXSmallApp.Models
         public AccountRelation RelatedPerson { get; set; }
     }
 
-    public class People
-    {
-        [JsonConverter(typeof(Tools.ObjectIdConverter))]
-        public ObjectId Id { get; set; }
-        public DateTime CreateTime { get; set; }
-        /// <summary>
-        /// 关联人
-        /// </summary>
-        public AccountRelation RelatedPerson { get; set; }
-    }
 }

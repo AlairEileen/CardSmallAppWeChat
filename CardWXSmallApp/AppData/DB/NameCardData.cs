@@ -82,7 +82,7 @@ namespace CardWXSmallApp.AppData.DB
             }
         }
         #endregion
-       
+
         #region 重建名片关联信息
 
         /// <summary>
@@ -105,6 +105,10 @@ namespace CardWXSmallApp.AppData.DB
             string openId = (string)state;
             var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
             var thisAccount = collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            if (thisAccount.CardHolderReceive == null)
+            {
+                return;
+            }
             ObjectId[] objectIds = new ObjectId[thisAccount.CardHolderReceive.Count];
             for (int i = 0; i < thisAccount.CardHolderReceive.Count; i++)
             {
@@ -145,7 +149,9 @@ namespace CardWXSmallApp.AppData.DB
                 var update = Builders<AccountCard>.Update.Set(x => x.CardHolder, saveList).Set(x => x.CardHolderReceive, saveListRe);
                 collection.UpdateOne(x => x.Id.Equals(item.Id), update);
             }
-        } 
+        }
         #endregion
+
+
     }
 }

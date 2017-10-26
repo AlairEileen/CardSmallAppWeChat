@@ -43,7 +43,6 @@ namespace CardWXSmallApp.Models
         /// <summary>
         /// 名片夹——被动
         /// </summary>
-        [JsonIgnore]
         public List<NameCardSave> CardHolderReceive { get; set; }
 
         /// <summary>
