@@ -100,7 +100,7 @@ namespace CardWXSmallApp.Controllers
             }
             return JsonConvert.SerializeObject(responseModel);
         }
-
+       
         /// <summary>
         /// 更新头像后的联动更新
         /// </summary>
@@ -112,7 +112,7 @@ namespace CardWXSmallApp.Controllers
             //UpdateCardHolder(openId,saveName,dbTool);
             nameCardData.ResetCardHolder(openId);
         }
-
+       
         /// <summary>
         /// 更新名片夹头像信息
         /// </summary>
@@ -167,7 +167,7 @@ namespace CardWXSmallApp.Controllers
             long size = 0;
             var files = Request.Form.Files;
             string resultFileId = null;
-            BaseResponseModel<FileCard<string[]>> responseModel = new BaseResponseModel<FileCard<string[]>>();
+            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
 
             try
             {
@@ -197,7 +197,6 @@ namespace CardWXSmallApp.Controllers
                         new MongoDBTool().GetMongoCollection<FileCard<string[]>>("FileCard").InsertOne(fileCard);
                         resultFileId = fileCard.Id.ToString();
                     }
-
                     ThreadPool.QueueUserWorkItem(new WaitCallback(Create3Img), new string[] { filename, resultFileId });
                 }
                 responseModel.StatusCode = (int)ActionParams.code_ok;
@@ -206,8 +205,9 @@ namespace CardWXSmallApp.Controllers
             {
                 responseModel.StatusCode = (int)ActionParams.code_error;
             }
-            responseModel.JsonData = new FileCard<string[]>() { Id = new ObjectId(resultFileId) };
-            return JsonConvert.SerializeObject(responseModel);
+            responseModel.JsonData = resultFileId;
+            //return JsonConvert.SerializeObject(responseModel);
+            return resultFileId;
         }
 
         /// <summary>
