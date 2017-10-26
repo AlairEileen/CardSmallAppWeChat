@@ -10,6 +10,7 @@ using CardWXSmallApp.ResponseModels;
 using Newtonsoft.Json;
 using CardWXSmallApp.Tools;
 using MongoDB.Bson;
+using CardWXSmallApp.Tools.Strings;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,7 +23,7 @@ namespace CardWXSmallApp.Controllers
         /// </summary>
         /// <param name="thisOpenId">当前用户openid</param>
         /// <param name="thatOpenId">关联用户openid</param>
-        /// <param name="relationType">0:人气，1：赞，2：留言</param>
+        /// <param name="relationType">0:人气，1：赞，2：留言，3：人脉</param>
         /// <param name="content">留言内容</param>
         /// <returns></returns>
         public string PushOrPullRelation(string thisOpenId, string thatOpenId, int relationType, string content)
@@ -112,13 +113,51 @@ namespace CardWXSmallApp.Controllers
                     relationContent.LeaveWordList.Add(new LeaveWord() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation, Content = content });
                     relationContent.LeaveWordCount = relationContent.LeaveWordList.Count();
                     break;
+                case 3:
+                    if (relationContent.PeopleList == null)
+                    {
+                        relationContent.PeopleList = new List<People>();
+                    }
+                    People people = relationContent.PeopleList.Find(x => x.RelatedPerson.Id.Equals(accountRelation.Id));
+                    if (people == null)
+                    {
+                        relationContent.PeopleList.Add(new People() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation });
+                    }
+                    else
+                    {
+                        relationContent.PeopleList.Remove(people);
+                    }
+                    relationContent.FabulousCount = relationContent.PeopleList.Count();
+
+                    break;
             }
         }
 
         private void InitPushOrPullRelationParams(AccountCard thisAccount, AccountCard thatAccount, out AccountRelation thisAccountRelation, out AccountRelation thatAccountRelation)
         {
-            thisAccountRelation = new AccountRelation() { AccountName = thisAccount.AccountName, AvatarUrl = thisAccount.AvatarUrl, Id = thisAccount.Id, OpenId = thisAccount.OpenId, Post = thisAccount.NameCard == null ? "暂无" : thisAccount.NameCard.Post };
-            thatAccountRelation = new AccountRelation() { AccountName = thatAccount.AccountName, AvatarUrl = thatAccount.AvatarUrl, Id = thatAccount.Id, OpenId = thatAccount.OpenId, Post = thatAccount.NameCard == null ? "暂无" : thatAccount.NameCard.Post };
+            thisAccountRelation = new AccountRelation()
+            {
+                Id = thisAccount.Id,
+                AccountName = thisAccount.AccountName,
+                PhoneNumber = thisAccount.PhoneNumber,
+                OpenId = thisAccount.OpenId,
+                Post = thisAccount.NameCard == null ? "暂无" : thisAccount.NameCard.Post,
+                AvatarUrl = thisAccount.AvatarUrl,
+                PostLetterFirst = thisAccount.NameCard.Post.GetLetterFirst(),
+                AccountNameLetterFirst = thisAccount.AccountName.GetLetterFirst()
+            };
+            thatAccountRelation = new AccountRelation()
+            {
+                Id = thatAccount.Id,
+                AccountName = thatAccount.AccountName,
+                PhoneNumber = thatAccount.PhoneNumber,
+                OpenId = thatAccount.OpenId,
+                Post = thatAccount.NameCard == null ? "暂无" : thatAccount.NameCard.Post,
+                AvatarUrl = thatAccount.AvatarUrl,
+                PostLetterFirst = thatAccount.NameCard.Post.GetLetterFirst(),
+                AccountNameLetterFirst = thatAccount.AccountName.GetLetterFirst()
+            };
+            //thatAccountRelation = new AccountRelation() { AccountName = thatAccount.AccountName, AvatarUrl = thatAccount.AvatarUrl, Id = thatAccount.Id, OpenId = thatAccount.OpenId, Post = thatAccount.NameCard == null ? "暂无" : thatAccount.NameCard.Post };
             if (thisAccount.Relation == null)
             {
                 thisAccount.Relation = new RelationCard() { Id = ObjectId.GenerateNewId() };
