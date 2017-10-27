@@ -20,7 +20,7 @@ namespace CardWXSmallApp.Controllers
     public class AccountController : Controller
     {
 
-        NameCardData nameCardData = new NameCardData();
+        RelationData relationData = new RelationData();
 
         /// <summary>
         /// 请求登录
@@ -67,7 +67,7 @@ namespace CardWXSmallApp.Controllers
             Console.WriteLine("json**3:" + jsonString);
             return jsonString;
         }
-      
+
         /// <summary>
         /// 下载微信头像
         /// </summary>
@@ -157,7 +157,8 @@ namespace CardWXSmallApp.Controllers
                 }
                 new MongoDBTool().GetMongoCollection<AccountCard>().UpdateOne(filter, update);
                 ///重置关联信息
-                nameCardData.ResetCardHolder(accountCard.OpenId);
+                //nameCardData.ResetCardHolder(accountCard.OpenId);
+                relationData.ResetRelationInfo(accountCard.OpenId);
                 responseModel.StatusCode = (int)ActionParams.code_ok;
 
             }

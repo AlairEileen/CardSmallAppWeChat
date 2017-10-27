@@ -14,7 +14,7 @@ namespace CardWXSmallApp.Controllers
 {
     public class NameCardController : Controller
     {
-        NameCardData nameCardData = new NameCardData();
+        RelationData relationData = new RelationData();
 
         /// <summary>
         /// 修改名片信息
@@ -43,7 +43,6 @@ namespace CardWXSmallApp.Controllers
             {
                 if (fileIdList != null && fileIdList.Count() > 0)
                 {
-
                     ObjectId[] objectIds = new ObjectId[fileIdList.Length];
                     for (int i = 0; i < fileIdList.Length; i++)
                     {
@@ -52,7 +51,6 @@ namespace CardWXSmallApp.Controllers
                     var filterSelect = Builders<FileCard<string[]>>.Filter.In(x => x.Id, objectIds);
                     var fileList = mongo.GetMongoCollection<FileCard<string[]>>("FileCard").Find(filterSelect).ToList();
                     fileCardList = fileList;
-
                 }
 
                 var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
@@ -89,7 +87,8 @@ namespace CardWXSmallApp.Controllers
                 var update = Builders<AccountCard>.Update.Set(x => x.NameCard, nameCard).Set(x => x.PhoneNumber, accountCard.PhoneNumber).Set(x => x.AccountName, accountCard.AccountName).Set(x => x.NameCard, nameCard);
                 mongo.GetMongoCollection<AccountCard>().UpdateOne(filter, update);
                 ///重置关联信息
-                nameCardData.ResetCardHolder(accountCard.OpenId);
+                //nameCardData.ResetCardHolder(accountCard.OpenId);
+                relationData.ResetRelationInfo(accountCard.OpenId);
             }
             catch (Exception)
             {
@@ -108,9 +107,9 @@ namespace CardWXSmallApp.Controllers
         /// <param name="sortType">0：名称正序，1：公司名正序，2：时间倒序</param>
         /// <param name="searchParam"></param>
         /// <returns></returns>
-        public string GetAllNameCard(AccountCard accountCard, int sortType, string searchParam)
+        public string FindAllNameCard(AccountCard accountCard, int sortType, string searchParam)
         {
-            BaseResponseModel<IEnumerable<IGrouping<string, NameCardSave>>> responseModel = new BaseResponseModel<IEnumerable<IGrouping<string, NameCardSave>>>();
+            BaseResponseModel<IEnumerable<IGrouping<string, People>>> responseModel = new BaseResponseModel<IEnumerable<IGrouping<string, People>>>();
             if (accountCard.OpenId == null)
             {
                 responseModel.StatusCode = (int)ActionParams.code_error_null;
@@ -120,13 +119,14 @@ namespace CardWXSmallApp.Controllers
             try
             {
                 accountCard = new MongoDBTool().GetMongoCollection<AccountCard>().Find(x => x.OpenId.Equals(accountCard.OpenId)).FirstOrDefault();
-                List<NameCardSave> list = new List<NameCardSave>();
-                list = accountCard.CardHolder;
+                List<People> list = new List<People>();
+                list = accountCard.Relation.RelationActive.PeopleList;
                 if (searchParam != null)
                 {
-                    list = accountCard.CardHolder.FindAll(x => x.AccountName.Contains(searchParam) || x.Post.Contains(searchParam));
+                    list = accountCard.Relation.RelationActive.PeopleList.FindAll(x => x.RelatedPerson.AccountName.Contains(searchParam) || x.RelatedPerson.Post.Contains(searchParam));
                 }
-                var groupList = list.GroupBy(x => sortType == 0? x.AccountNameLetterFirst : sortType == 1 ? x.PostLetterFirst : x.CreateTime);
+
+                var groupList = list.GroupBy(x => sortType == 0 ? x.RelatedPerson.AccountNameLetterFirst : sortType == 1 ? x.RelatedPerson.PostLetterFirst : x.CreateTime.ToString());
                 responseModel.JsonData = groupList;
             }
             catch (Exception)
@@ -138,33 +138,6 @@ namespace CardWXSmallApp.Controllers
             return JsonConvert.SerializeObject(responseModel);
         }
 
-        /// <summary>
-        /// 收藏或者移出名片
-        /// </summary>
-        /// <param name="thisOpenId"></param>
-        /// <param name="thatOpenId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public string PushOrPullCard(string thisOpenId, string thatOpenId)
-        {
-            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
-            if (string.IsNullOrEmpty(thisOpenId) || string.IsNullOrEmpty(thatOpenId))
-            {
-                responseModel.StatusCode = (int)ActionParams.code_error_null;
-                return JsonConvert.SerializeObject(responseModel);
-            }
-            responseModel.StatusCode = (int)ActionParams.code_ok;
-            try
-            {
-                nameCardData.PullOrPushCardHolder(thisOpenId, thatOpenId);
 
-            }
-            catch (Exception)
-            {
-                responseModel.StatusCode = (int)ActionParams.code_error;
-                //throw;
-            }
-            return JsonConvert.SerializeObject(responseModel);
-        }
     }
 }

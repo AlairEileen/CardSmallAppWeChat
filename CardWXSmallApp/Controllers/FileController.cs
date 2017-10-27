@@ -20,8 +20,7 @@ namespace CardWXSmallApp.Controllers
     public class FileController : Controller
     {
 
-        NameCardData nameCardData = new NameCardData();
-
+        RelationData relationData = new RelationData();
         private IHostingEnvironment hostingEnvironment;
         public FileController(IHostingEnvironment environment)
         {
@@ -110,7 +109,8 @@ namespace CardWXSmallApp.Controllers
         private void UpdateAvatar(string openId, string saveName, MongoDBTool dbTool)
         {
             //UpdateCardHolder(openId,saveName,dbTool);
-            nameCardData.ResetCardHolder(openId);
+            //nameCardData.ResetCardHolder(openId);
+            relationData.ResetRelationInfo(openId);
         }
        
         /// <summary>
