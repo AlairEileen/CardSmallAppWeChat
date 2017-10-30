@@ -37,7 +37,7 @@ namespace CardWXSmallApp.Tools
             try
             {
                 //获取源图像
-                srcImage = Image.FromStream(System.IO.File.OpenRead(srcPath), false);
+                srcImage = Image.FromStream(System.IO.File.OpenRead(srcPath), true);
                 FileInfo fileInfo = new FileInfo(srcPath);
                 //目标宽度
                 var destWidth = srcImage.Width;

@@ -228,8 +228,9 @@ namespace CardWXSmallApp.Controllers
             string fileName2 = $@"{headString}_2{exString}";
             string fileName2Db = $@"{nameString}_2{exString}";
             string error1 = "", error2 = "";
-            bool hasFile1 = new ImageTool().GetCompressImage(fileName, fileName1, 800, 800, 80, out error1);
-            bool hasFile2 = new ImageTool().GetCompressImage(fileName, fileName2, 200, 200, 60, out error2);
+            string imgType = fileName.Substring(fileName.LastIndexOf(".")+1).ToLower().Equals("jpg")?"image/jpg":"image/png";
+            bool hasFile1 = new ImageTool().GetCompressImage(fileName, fileName1, 800, 800, 80, out error1,imgType);
+            bool hasFile2 = new ImageTool().GetCompressImage(fileName, fileName2, 200, 200, 60, out error2,imgType);
             List<string> fileUrls = new List<string>();
             fileUrls.Add($@"{nameString}{exString}");
             if (hasFile1 && hasFile2)
@@ -250,7 +251,7 @@ namespace CardWXSmallApp.Controllers
             else if (!hasFile1&&!hasFile2)
             {
                 fileUrls.Add($@"{nameString}{exString}");
-                fileUrls.Add($@"{nameString}{exString}");
+                  fileUrls.Add($@"{nameString}{exString}");
             }
 
             if (fileUrls.Count != 1)
