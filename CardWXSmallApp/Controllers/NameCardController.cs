@@ -47,7 +47,7 @@ namespace CardWXSmallApp.Controllers
                     if (fileIds!=null&&fileIds.Count()!=0)
                     {
                         ObjectId[] objectIds = new ObjectId[fileIdList.Length];
-                        for (int i = 0; i < fileIdList.Length; i++)
+                        for (int i = 0; i < fileIds.Count(); i++)
                         {
                             objectIds[i] = new ObjectId(fileIds[i]);
                         }
