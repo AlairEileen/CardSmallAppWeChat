@@ -12,7 +12,7 @@ namespace CardWXSmallApp.AppData.DB
         /// <summary>
         /// 数据库连接
         /// </summary>
-        private const string conn = "mongodb://127.0.0.1:27027";
+        private const string conn = "mongodb://192.168.1.222:27027";
         /// <summary>
         /// 指定的数据库
         /// </summary>

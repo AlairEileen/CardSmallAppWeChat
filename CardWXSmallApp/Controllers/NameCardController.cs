@@ -26,7 +26,7 @@ namespace CardWXSmallApp.Controllers
         /// <param name="fileIdList">照片数组</param>
         /// <returns></returns>
         [HttpGet]
-        public string ChangeNameCard(AccountCard accountCard, NameCard nameCard, AlbumCard albumCard, LocationCard location, string[] fileIdList)
+        public string ChangeNameCard(AccountCard accountCard, NameCard nameCard, AlbumCard albumCard, LocationCard location, string fileIdList)
         {
             BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
             if (accountCard.OpenId == null)
@@ -41,16 +41,21 @@ namespace CardWXSmallApp.Controllers
             List<FileCard<string[]>> fileCardList = null;
             try
             {
-                if (fileIdList != null && fileIdList.Count() > 0)
+                if (!string.IsNullOrEmpty(fileIdList) && fileIdList.Count() > 0)
                 {
-                    ObjectId[] objectIds = new ObjectId[fileIdList.Length];
-                    for (int i = 0; i < fileIdList.Length; i++)
+                    string[] fileIds=JsonConvert.DeserializeObject<string[]>(fileIdList);
+                    if (fileIds!=null&&fileIds.Count()!=0)
                     {
-                        objectIds[i] = new ObjectId(fileIdList[i]);
+                        ObjectId[] objectIds = new ObjectId[fileIdList.Length];
+                        for (int i = 0; i < fileIdList.Length; i++)
+                        {
+                            objectIds[i] = new ObjectId(fileIds[i]);
+                        }
+                        var filterSelect = Builders<FileCard<string[]>>.Filter.In(x => x.Id, objectIds);
+                        var fileList = mongo.GetMongoCollection<FileCard<string[]>>("FileCard").Find(filterSelect).ToList();
+                        fileCardList = fileList;
                     }
-                    var filterSelect = Builders<FileCard<string[]>>.Filter.In(x => x.Id, objectIds);
-                    var fileList = mongo.GetMongoCollection<FileCard<string[]>>("FileCard").Find(filterSelect).ToList();
-                    fileCardList = fileList;
+                   
                 }
 
                 var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
