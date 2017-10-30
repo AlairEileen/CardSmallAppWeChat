@@ -247,6 +247,11 @@ namespace CardWXSmallApp.Controllers
                 fileUrls.Add(fileName1Db);
                 fileUrls.Add($@"{nameString}{exString}");
             }
+            else if (!hasFile1&&!hasFile2)
+            {
+                fileUrls.Add($@"{nameString}{exString}");
+                fileUrls.Add($@"{nameString}{exString}");
+            }
 
             if (fileUrls.Count != 1)
             {
