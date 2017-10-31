@@ -63,6 +63,7 @@ namespace CardWXSmallApp.Controllers
 
                 }
                 var update = Builders<AccountCard>.Update.Set(x => x.AlbumCardList, list);
+                collection.UpdateOne(x=>x.Id.Equals(accountCard.Id),update);
             }
             catch (Exception)
             {

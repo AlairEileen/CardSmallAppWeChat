@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using CardWXSmallApp.AppData.DB;
 using CardWXSmallApp.Models;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -54,9 +55,10 @@ namespace CardWXSmallApp.Controllers
             return JsonConvert.SerializeObject(responseModel);
 
         }
-        public string PushSchedule(string openId, ScheduleCard scheduleCard)
+        public string PushSchedule(string openId, ScheduleCard scheduleCard,string albumId)
         {
             BaseResponseModel<IEnumerable<IGrouping<string, ScheduleCard>>> responseModel = new BaseResponseModel<IEnumerable<IGrouping<string, ScheduleCard>>>();
+            responseModel.StatusCode = (int)ActionParams.code_ok;
             responseModel.StatusCode = (int)ActionParams.code_ok;
 
             if (openId == null)
@@ -64,15 +66,25 @@ namespace CardWXSmallApp.Controllers
                 responseModel.StatusCode = (int)ActionParams.code_error_null;
                 return JsonConvert.SerializeObject(responseModel);
             }
-            responseModel.StatusCode = (int)ActionParams.code_ok;
-            if (scheduleCard.Id==null)
-            {
 
+
+            var dbTool = new MongoDBTool();
+            var account = dbTool.GetMongoCollection<AccountCard>().Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            if (scheduleCard.Id == null)
+            {
+                scheduleCard.Id = ObjectId.GenerateNewId();
+                account.ScheduleList.Add(scheduleCard);
             }
             else
             {
-
+                var scheduleOld = account.ScheduleList.Find(x => x.Id.Equals(scheduleCard.Id));
+                scheduleOld = scheduleCard;
             }
+            var currentAlbum = account.AlbumCardList.Find(x => x.Id.Equals(new ObjectId(albumId)));
+            dbTool.GetMongoCollection<AlbumCard>().InsertOne(currentAlbum);
+            scheduleCard.album = new MongoDBRef(currentAlbum.GetType().ToString(), currentAlbum.Id);
+            var update = Builders<AccountCard>.Update.Set(x => x.ScheduleList, account.ScheduleList);
+            dbTool.GetMongoCollection<AccountCard>().UpdateOne(x => x.Id.Equals(account.Id), update);
 
 
             return JsonConvert.SerializeObject(responseModel);

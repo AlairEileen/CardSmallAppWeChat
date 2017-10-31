@@ -49,6 +49,10 @@ namespace CardWXSmallApp.Models
         /// </summary>
         public AlbumCard Pics { get; set; }
         /// <summary>
+        /// test
+        /// </summary>
+        public MongoDBRef album { get; set; }
+        /// <summary>
         /// 相关录音
         /// </summary>
         public FileCard<string> Record { get; set; }
@@ -60,6 +64,15 @@ namespace CardWXSmallApp.Models
         /// 参与人
         /// </summary>
         public List<AccountSchedule> ReceiverList { get; set; }
+    }
+
+    public class AlbumCardRef : MongoDBRef
+    {
+        public AlbumCardRef(string collectionName, BsonValue id) : base(collectionName, id)
+        {
+            
+        }
+        
     }
 
     public class AccountSchedule
