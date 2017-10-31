@@ -18,6 +18,8 @@ namespace CardWXSmallApp.Controllers
 {
     public class RelationController : Controller
     {
+
+        #region 添加或者移出关系
         /// <summary>
         /// 添加或者移出关系
         /// </summary>
@@ -57,8 +59,9 @@ namespace CardWXSmallApp.Controllers
                 {
                     AccountRelation thisAccountRelation, thatAccountRelation;
                     InitPushOrPullRelationParams(thisAccount, thatAccount, out thisAccountRelation, out thatAccountRelation);
-                    DoRelation(thisAccount.Relation.RelationActive, relationType, content, thatAccountRelation);
-                    DoRelation(thatAccount.Relation.RelationUnActive, relationType, content, thisAccountRelation);
+                    ObjectId popularId = ObjectId.GenerateNewId(), fabulousId = ObjectId.GenerateNewId(), leaveWordId = ObjectId.GenerateNewId(), peopleId = ObjectId.GenerateNewId();
+                    DoRelation(thisAccount.Relation.RelationActive, relationType, content, thatAccountRelation, popularId, fabulousId, leaveWordId, peopleId);
+                    DoRelation(thatAccount.Relation.RelationUnActive, relationType, content, thisAccountRelation, popularId, fabulousId, leaveWordId, peopleId);
                     var thisUpdate = Builders<AccountCard>.Update.Set(x => x.Relation, thisAccount.Relation);
                     var thatUpdate = Builders<AccountCard>.Update.Set(x => x.Relation, thatAccount.Relation);
                     collection.UpdateOne(x => x.Id.Equals(thisAccount.Id), thisUpdate);
@@ -73,7 +76,7 @@ namespace CardWXSmallApp.Controllers
             return JsonConvert.SerializeObject(responseModel);
         }
 
-        private void DoRelation(RelationContent relationContent, int relationType, string content, AccountRelation accountRelation)
+        private void DoRelation(RelationContent relationContent, int relationType, string content, AccountRelation accountRelation, ObjectId popularId, ObjectId fabulousId, ObjectId leaveWordId, ObjectId peopleId)
         {
             switch (relationType)
             {
@@ -84,7 +87,7 @@ namespace CardWXSmallApp.Controllers
                     }
                     if (!relationContent.PopularList.Exists(x => x.RelatedPerson.Id.Equals(accountRelation.Id)))
                     {
-                        relationContent.PopularList.Add(new Popular() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation });
+                        relationContent.PopularList.Add(new Popular() { Id = popularId, CreateTime = DateTime.Now, RelatedPerson = accountRelation });
                         relationContent.PopularCount = relationContent.PopularList.Count();
                     }
                     break;
@@ -96,7 +99,7 @@ namespace CardWXSmallApp.Controllers
                     Fabulous fabulous = relationContent.FabulousList.Find(x => x.RelatedPerson.Id.Equals(accountRelation.Id));
                     if (fabulous == null)
                     {
-                        relationContent.FabulousList.Add(new Fabulous() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation });
+                        relationContent.FabulousList.Add(new Fabulous() { Id = fabulousId, CreateTime = DateTime.Now, RelatedPerson = accountRelation });
                     }
                     else
                     {
@@ -110,7 +113,7 @@ namespace CardWXSmallApp.Controllers
                     {
                         relationContent.LeaveWordList = new List<LeaveWord>();
                     }
-                    relationContent.LeaveWordList.Add(new LeaveWord() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation, Content = content });
+                    relationContent.LeaveWordList.Add(new LeaveWord() { Id = leaveWordId, CreateTime = DateTime.Now, RelatedPerson = accountRelation, Content = content });
                     relationContent.LeaveWordCount = relationContent.LeaveWordList.Count();
                     break;
                 case 3:
@@ -121,7 +124,7 @@ namespace CardWXSmallApp.Controllers
                     People people = relationContent.PeopleList.Find(x => x.RelatedPerson.Id.Equals(accountRelation.Id));
                     if (people == null)
                     {
-                        relationContent.PeopleList.Add(new People() { Id = ObjectId.GenerateNewId(), CreateTime = DateTime.Now, RelatedPerson = accountRelation });
+                        relationContent.PeopleList.Add(new People() { Id = peopleId, CreateTime = DateTime.Now, RelatedPerson = accountRelation });
                     }
                     else
                     {
@@ -174,6 +177,61 @@ namespace CardWXSmallApp.Controllers
             {
                 thisAccount.Relation.RelationActive = new RelationContent() { Id = ObjectId.GenerateNewId() };
             }
+        }
+
+        #endregion
+        /// <summary>
+        /// 删除留言
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <param name="id">留言id</param>
+        /// <returns></returns>
+        public string DelLeaveWord(string openId, string id)
+        {
+            BaseResponseModel<string> responseModel = new BaseResponseModel<string>();
+            responseModel.StatusCode = (int)ActionParams.code_ok;
+
+            if (openId == null || id == null)
+            {
+                responseModel.StatusCode = (int)ActionParams.code_error_null;
+                responseModel.JsonData = $@"参数：openId:{openId} or id:{id}";
+                return JsonConvert.SerializeObject(responseModel);
+            }
+            responseModel.StatusCode = (int)ActionParams.code_ok;
+
+            var collection = new MongoDBTool().GetMongoCollection<AccountCard>();
+            var account = collection.Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            ObjectId leaveWordRelateId = ObjectId.Empty;
+            if (account != null)
+            {
+                var leaveWord = account.Relation.RelationActive.LeaveWordList.Find(x => x.Id.Equals(new ObjectId(id)));
+                leaveWordRelateId = leaveWord.RelatedPerson.Id;
+                account.Relation.RelationActive.LeaveWordList.Remove(leaveWord);
+                account.Relation.RelationActive.LeaveWordCount = account.Relation.RelationActive.LeaveWordList.Count;
+                var update = Builders<AccountCard>.Update.Set(x => x.Relation.RelationActive.LeaveWordList, account.Relation.RelationActive.LeaveWordList);
+                collection.UpdateOne(x => x.Id.Equals(account.Id), update);
+            }
+            else { responseModel.StatusCode = (int)ActionParams.code_error_null; }
+            AccountCard thatAccount = null;
+            if (leaveWordRelateId != ObjectId.Empty)
+            {
+                thatAccount = collection.Find(x => x.Id.Equals(leaveWordRelateId)).FirstOrDefault();
+
+            }
+            else { responseModel.StatusCode = (int)ActionParams.code_error_null; }
+
+            if (thatAccount != null)
+            {
+                var leaveWord = thatAccount.Relation.RelationUnActive.LeaveWordList.Find(x => x.Id.Equals(new ObjectId(id)));
+                leaveWordRelateId = leaveWord.RelatedPerson.Id;
+                thatAccount.Relation.RelationUnActive.LeaveWordList.Remove(leaveWord);
+                thatAccount.Relation.RelationUnActive.LeaveWordCount = thatAccount.Relation.RelationUnActive.LeaveWordList.Count;
+                var update = Builders<AccountCard>.Update.Set(x => x.Relation.RelationUnActive.LeaveWordList, thatAccount.Relation.RelationUnActive.LeaveWordList);
+                collection.UpdateOne(x => x.Id.Equals(thatAccount.Id), update);
+            }
+            else { responseModel.StatusCode = (int)ActionParams.code_error_null; }
+
+            return JsonConvert.SerializeObject(responseModel);
         }
     }
 }

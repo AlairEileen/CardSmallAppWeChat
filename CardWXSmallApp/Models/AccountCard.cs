@@ -36,16 +36,6 @@ namespace CardWXSmallApp.Models
         /// </summary>
         public NameCard NameCard { get; set; }
         /// <summary>
-        /// 名片夹
-        /// </summary>
-        public List<NameCardSave> CardHolder { get; set; }
-
-        /// <summary>
-        /// 名片夹——被动
-        /// </summary>
-        public List<NameCardSave> CardHolderReceive { get; set; }
-
-        /// <summary>
         /// 相册
         /// </summary>
         public List<AlbumCard> AlbumCardList { get; set; }
@@ -53,20 +43,10 @@ namespace CardWXSmallApp.Models
         /// 关系
         /// </summary>
         public RelationCard Relation { get; set; }
-    }
-
-    public class NameCardSave
-    {
-        [JsonConverter(typeof(Tools.ObjectIdConverter))]
-        public ObjectId Id { get; set; }
-        public String OpenId { get; set; }
-        public String AvatarUrl { get; set; }
-        public String AccountName { get; set; }
-        public String AccountNameLetterFirst { get; set; }
-        public String Post { get; set; }
-        public String PostLetterFirst { get; set; }
-        public String PhoneNumber { get; set; }
-        public String CreateTime { get; set; }
-
+        /// <summary>
+        /// 日程列表
+        /// </summary>
+        [JsonIgnore]
+        public List<ScheduleCard> ScheduleList { get; set; }
     }
 }
