@@ -40,6 +40,7 @@ namespace CardWXSmallApp.Controllers
                 var scheduleList = account.ScheduleList;
                 if (scheduleList != null)
                 {
+
                     var list1 = scheduleList.FindAll(x => DateTime.Compare(DateTime.Now, x.Time) > 0);
                     if (list1 != null) { list1.ForEach(x => x.Status = 1); }
                     var list2 = scheduleList.FindAll(x => DateTime.Compare(DateTime.Now, x.Time) == 0);
@@ -55,7 +56,7 @@ namespace CardWXSmallApp.Controllers
             return JsonConvert.SerializeObject(responseModel);
 
         }
-        public string PushSchedule(string openId, ScheduleCard scheduleCard,string albumId)
+        public string PushSchedule(string openId, ScheduleCard scheduleCard, int remind, string imageIdList, string recondFileId)
         {
             BaseResponseModel<IEnumerable<IGrouping<string, ScheduleCard>>> responseModel = new BaseResponseModel<IEnumerable<IGrouping<string, ScheduleCard>>>();
             responseModel.StatusCode = (int)ActionParams.code_ok;
@@ -67,26 +68,58 @@ namespace CardWXSmallApp.Controllers
                 return JsonConvert.SerializeObject(responseModel);
             }
 
-
             var dbTool = new MongoDBTool();
             var account = dbTool.GetMongoCollection<AccountCard>().Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
-            if (scheduleCard.Id == null)
+            if (!string.IsNullOrEmpty(imageIdList))
             {
-                scheduleCard.Id = ObjectId.GenerateNewId();
+                List<ObjectId> list = JsonConvert.DeserializeObject<List<ObjectId>>(imageIdList);
+                var imageListFilter = Builders<FileCard<string[]>>.Filter.In(x => x.Id, list);
+                scheduleCard.Pics = dbTool.GetMongoCollection<FileCard<string[]>>("FileCard").Find(imageListFilter).ToList();
+            }
+            if (!string.IsNullOrEmpty(recondFileId))
+            {
+                scheduleCard.Record = dbTool.GetMongoCollection<FileCard<string>>("FileCard").Find(x => x.Id.Equals(new ObjectId(recondFileId))).FirstOrDefault();
+            }
+
+            if (account.ScheduleList == null)
+            {
+                account.ScheduleList = new List<ScheduleCard>();
+            }
+            if (scheduleCard.ScheduleId == ObjectId.Empty)
+            {
+                scheduleCard.ScheduleId = ObjectId.GenerateNewId();
+                if (scheduleCard.PeopleList == null)
+                {
+                    scheduleCard.PeopleList = new List<AccountSchedule>();
+                    string post = account.NameCard == null ? "暂无" : account.NameCard.Post;
+                    scheduleCard.PeopleList.Add(new AccountSchedule() {
+                        AccountId = account.Id,
+                        AccountName = account.AccountName,
+                        AvatarUrl = account.AvatarUrl,
+                        JoinTime = DateTime.Now,
+                        IsSender = true,
+                        PhoneNumber = account.PhoneNumber,
+                        Post = post,
+                        Remind = remind });
+                }
                 account.ScheduleList.Add(scheduleCard);
             }
             else
             {
-                var scheduleOld = account.ScheduleList.Find(x => x.Id.Equals(scheduleCard.Id));
-                scheduleOld = scheduleCard;
+                var scheduleOld = account.ScheduleList.Find(x => x.ScheduleId.Equals(scheduleCard.ScheduleId));
+                if (scheduleCard != null)
+                {
+                    scheduleOld.More = scheduleCard.More;
+                    scheduleOld.Link = scheduleCard.Link;
+                    scheduleOld.Pics = scheduleCard.Pics;
+                    scheduleOld.Record = scheduleCard.Record;
+                    scheduleOld.LastChangeTime = DateTime.Now;
+                    scheduleOld.SubJect = scheduleCard.SubJect;
+                }
+
             }
-            var currentAlbum = account.AlbumCardList.Find(x => x.Id.Equals(new ObjectId(albumId)));
-            dbTool.GetMongoCollection<AlbumCard>().InsertOne(currentAlbum);
-            scheduleCard.album = new MongoDBRef(currentAlbum.GetType().ToString(), currentAlbum.Id);
             var update = Builders<AccountCard>.Update.Set(x => x.ScheduleList, account.ScheduleList);
             dbTool.GetMongoCollection<AccountCard>().UpdateOne(x => x.Id.Equals(account.Id), update);
-
-
             return JsonConvert.SerializeObject(responseModel);
         }
     }

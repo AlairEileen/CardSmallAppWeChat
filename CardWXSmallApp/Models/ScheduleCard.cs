@@ -12,7 +12,7 @@ namespace CardWXSmallApp.Models
     public class ScheduleCard
     {
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
-        public ObjectId Id { get; set; }
+        public ObjectId ScheduleId { get; set; }
         /// <summary>
         /// 主题
         /// </summary>
@@ -32,10 +32,7 @@ namespace CardWXSmallApp.Models
         /// </summary>
         [JsonConverter(typeof(Tools.DateConverterEndMinute))]
         public DateTime Time { get; set; }
-        /// <summary>
-        /// 提醒
-        /// </summary>
-        public Int32 Remind { get; set; }
+
         /// <summary>
         /// 执行状态 1：未执行，2：正在执行，3：已结束
         /// </summary>
@@ -45,17 +42,13 @@ namespace CardWXSmallApp.Models
         /// </summary>
         public String More { get; set; }
         /// <summary>
-        /// 相关图片
-        /// </summary>
-        public AlbumCard Pics { get; set; }
-        /// <summary>
-        /// test
-        /// </summary>
-        public MongoDBRef album { get; set; }
-        /// <summary>
         /// 相关录音
         /// </summary>
         public FileCard<string> Record { get; set; }
+        /// <summary>
+        /// 相关图片
+        /// </summary>
+        public List<FileCard<string[]>> Pics { get; set; }
         /// <summary>
         /// 相关链接
         /// </summary>
@@ -63,22 +56,41 @@ namespace CardWXSmallApp.Models
         /// <summary>
         /// 参与人
         /// </summary>
-        public List<AccountSchedule> ReceiverList { get; set; }
+        public List<AccountSchedule> PeopleList { get; set; }
+        /// <summary>
+        /// 留言列表
+        /// </summary>
+        public List<LeaveMessage> leaveMessage { get; set; }
     }
 
-    public class AlbumCardRef : MongoDBRef
+    public class LeaveMessage
     {
-        public AlbumCardRef(string collectionName, BsonValue id) : base(collectionName, id)
-        {
-            
-        }
-        
+        [JsonConverter(typeof(Tools.ObjectIdConverter))]
+        public ObjectId LeaveMessageId { get; set; }
+        public AccountLeaveMessage AccountLeave { get; set; }
+        /// <summary>
+        /// 相关录音
+        /// </summary>
+        public FileCard<string> Record { get; set; }
+        /// <summary>
+        /// 相关图片
+        /// </summary>
+        public FileCard<string> Pic { get; set; }
+        public DateTime CreateTime { get; set; }
+    }
+
+    public class AccountLeaveMessage
+    {
+        [JsonConverter(typeof(Tools.ObjectIdConverter))]
+        public ObjectId AccountId { get; set; }
+        public String AvatarUrl { get; set; }
+        public String AccountName { get; set; }
     }
 
     public class AccountSchedule
     {
         [JsonConverter(typeof(Tools.ObjectIdConverter))]
-        public ObjectId Id { get; set; }
+        public ObjectId AccountId { get; set; }
         public String AvatarUrl { get; set; }
         public String AccountName { get; set; }
         public String PhoneNumber { get; set; }
@@ -92,5 +104,9 @@ namespace CardWXSmallApp.Models
         /// </summary>
         [JsonConverter(typeof(Tools.DateConverterEndMinute))]
         public DateTime JoinTime { get; set; }
+        /// <summary>
+        /// 提醒
+        /// </summary>
+        public Int32 Remind { get; set; }
     }
 }

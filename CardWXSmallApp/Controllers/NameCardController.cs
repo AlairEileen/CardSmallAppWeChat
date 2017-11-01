@@ -43,8 +43,8 @@ namespace CardWXSmallApp.Controllers
             {
                 if (!string.IsNullOrEmpty(fileIdList) && fileIdList.Count() > 0)
                 {
-                    string[] fileIds=JsonConvert.DeserializeObject<string[]>(fileIdList);
-                    if (fileIds!=null&&fileIds.Count()!=0)
+                    string[] fileIds = JsonConvert.DeserializeObject<string[]>(fileIdList);
+                    if (fileIds != null && fileIds.Count() != 0)
                     {
                         ObjectId[] objectIds = new ObjectId[fileIdList.Length];
                         for (int i = 0; i < fileIds.Count(); i++)
@@ -55,7 +55,7 @@ namespace CardWXSmallApp.Controllers
                         var fileList = mongo.GetMongoCollection<FileCard<string[]>>("FileCard").Find(filterSelect).ToList();
                         fileCardList = fileList;
                     }
-                   
+
                 }
 
                 var filter = Builders<AccountCard>.Filter.Eq(x => x.OpenId, accountCard.OpenId);
@@ -90,7 +90,7 @@ namespace CardWXSmallApp.Controllers
                 }
                 nameCard.Album = albumCard;
                 var update = Builders<AccountCard>.Update.Set(x => x.NameCard, nameCard).Set(x => x.PhoneNumber, accountCard.PhoneNumber).Set(x => x.AccountName, accountCard.AccountName).Set(x => x.NameCard, nameCard);
-                mongo.GetMongoCollection<AccountCard>().UpdateOne(filter, update);
+                mongo.GetMongoCollection<AccountCard>().UpdateOne(x => x.Id.Equals(account.Id), update);
                 ///重置关联信息
                 //nameCardData.ResetCardHolder(accountCard.OpenId);
                 relationData.ResetRelationInfo(accountCard.OpenId);
