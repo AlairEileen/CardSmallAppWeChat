@@ -23,6 +23,7 @@ namespace CardWXSmallApp.Tools
         /// <param name="mimeType">如 image/jpeg</param>
         public bool GetCompressImage(string srcPath, string destPath, int maxWidth, int maxHeight, int quality, out string error, string mimeType = "image/jpeg")
         {
+            Console.WriteLine("##############正在压缩图片");
             bool retVal = false;
             error = string.Empty;
             //宽高不能小于0
@@ -91,6 +92,8 @@ namespace CardWXSmallApp.Tools
             catch (Exception ex)
             {
                 error = ex.Message;
+                Console.WriteLine("##############正在压缩图片出错："+ex.Message);
+
             }
             finally
             {

@@ -69,7 +69,8 @@ namespace CardWXSmallApp.Controllers
             }
 
             var dbTool = new MongoDBTool();
-            var account = dbTool.GetMongoCollection<AccountCard>().Find(x => x.OpenId.Equals(openId)).FirstOrDefault();
+            var filter = Builders<AccountCard>.Filter.Eq(x=>x.OpenId,openId);
+            var account = dbTool.GetMongoCollection<AccountCard>().Find(filter).FirstOrDefault();
             if (!string.IsNullOrEmpty(imageIdList))
             {
                 List<ObjectId> list = JsonConvert.DeserializeObject<List<ObjectId>>(imageIdList);
