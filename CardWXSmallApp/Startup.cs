@@ -41,7 +41,7 @@ namespace CardWXSmallApp
             {
                 app.UseExceptionHandler("/Error");
             }
-
+            
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
